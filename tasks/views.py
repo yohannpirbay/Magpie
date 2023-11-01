@@ -11,6 +11,14 @@ from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm
 from tasks.helpers import login_prohibited
 
+from .models import Team  # Import your Team model
+
+@login_required
+def all_teams(request):
+    """Display a list of all teams."""
+    teams = Team.objects.all()
+    return render(request, 'all_teams.html', {'teams': teams})
+
 
 @login_required
 def dashboard(request):
