@@ -40,3 +40,9 @@ class User(AbstractUser):
         """Return a URL to a miniature version of the user's gravatar."""
         
         return self.gravatar(size=60)
+    
+class Task(models.Model):
+    name = models.CharField(max_length=15, unique=False, blank=False)
+    description = models.CharField(max_length=120, blank=False)
+    assignedEmail = models.EmailField(unique=False, blank=False)
+

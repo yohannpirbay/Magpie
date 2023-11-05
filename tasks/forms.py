@@ -108,3 +108,17 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
             password=self.cleaned_data.get('new_password'),
         )
         return user
+    
+
+class TaskForm(forms.Form):
+    name = forms.CharField(max_length=15, required=True)
+    description = forms.CharField(max_length=120,
+                                  required=True,
+                                  widget=forms.Textarea)
+    assignedEmail = forms.EmailField(required=True)
+
+    def clean_assignedEmail(self):
+        assigned_Email = self.cleaned_data.get("assignedEmail")
+        if not User.objects.filter(email = assigned_Email).exists():
+            raise forms.ValidationError("An account using this email does not exist")
+        return assigned_Email
