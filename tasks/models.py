@@ -40,3 +40,15 @@ class User(AbstractUser):
         """Return a URL to a miniature version of the user's gravatar."""
         
         return self.gravatar(size=60)
+
+
+class Team(models.Model):
+    """Model used for team creation and team related information."""
+
+    name = models.CharField(max_length=50, blank=False)
+    description = models.TextField(max_length=500, blank=False)
+    members = models.ManyToManyField(User)
+
+
+
+
