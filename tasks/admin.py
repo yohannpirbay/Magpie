@@ -5,7 +5,7 @@ from .models import Team, Invite
 class UserAdmin(admin.ModelAdmin):
     """Configuration of the admin interface for Users. """
 
-    list_display = ['username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams']
+    list_display = ['username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams', 'id']
 
     def display_teams(self, obj):
         # Get the user's team memberships and concatenate the team names into a string
@@ -16,6 +16,11 @@ class UserAdmin(admin.ModelAdmin):
 
 class TeamAdmin(admin.ModelAdmin):
     list_display = ['name']
+
+@admin.register(Invite)
+class InviteAdmin(admin.ModelAdmin):
+    list_display = ('sender', 'recipient', 'team', 'status', )
+
 
 
 

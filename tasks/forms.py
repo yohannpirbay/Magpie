@@ -2,8 +2,25 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
-from .models import User
+from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+from .models import User, Team
 
+User = get_user_model()
+
+class InvitationForm(forms.Form):
+    user = forms.ModelChoiceField(queryset=User.objects.all(), label='Select User')
+    team = forms.ModelChoiceField(queryset=Team.objects.all(), label='Select Team')
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(InvitationForm, self).__init__(*args, **kwargs)
+
+    def clean_user(self):
+        user = self.cleaned_data.get('user')
+        if user == self.user:
+            raise ValidationError("You cannot send an invitation to yourself.")
+        return user
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
 

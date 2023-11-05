@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from your_app.models import Team
+from tasks.models import Team
 
 class Command(BaseCommand):
     help = 'Delete all teams'
