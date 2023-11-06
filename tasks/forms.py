@@ -111,14 +111,19 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
     
 
 class TaskForm(forms.Form):
-    name = forms.CharField(max_length=15, required=True)
+    title = forms.CharField(max_length=15, required=True)
     description = forms.CharField(max_length=120,
                                   required=True,
                                   widget=forms.Textarea)
-    assignedEmail = forms.EmailField(required=True)
+    assignedUsername = forms.CharField(max_length=30, 
+                                       required=True,
+                                       validators=[RegexValidator(
+                                            regex=r'^@\w{3,}$',
+                                            message='Username must consist of @ followed by at least three alphanumericals'
+                                        )])
 
-    def clean_assignedEmail(self):
-        assigned_Email = self.cleaned_data.get("assignedEmail")
-        if not User.objects.filter(email = assigned_Email).exists():
+    def clean_assignedUsername(self):
+        assigned_Username = self.cleaned_data.get("assignedUsername")
+        if not User.objects.filter(username = assigned_Username).exists():
             raise forms.ValidationError("An account using this email does not exist")
-        return assigned_Email
+        return assigned_Username

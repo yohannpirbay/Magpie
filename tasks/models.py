@@ -42,7 +42,13 @@ class User(AbstractUser):
         return self.gravatar(size=60)
     
 class Task(models.Model):
-    name = models.CharField(max_length=15, unique=False, blank=False)
+    title = models.CharField(max_length=15, unique=False, blank=False)
     description = models.CharField(max_length=120, blank=False)
-    assignedEmail = models.EmailField(unique=False, blank=False)
-
+    assignedUsername = models.CharField(unique=False, 
+                                        blank=False, 
+                                        max_length=30,
+                                        validators=[RegexValidator(
+                                            regex=r'^@\w{3,}$',
+                                            message='Username must consist of @ followed by at least three alphanumericals'
+                                        )])
+    
