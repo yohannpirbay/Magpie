@@ -5,7 +5,7 @@ from libgravatar import Gravatar
 
 class Team(models.Model):
     name = models.CharField(max_length=50, blank=False)
-    description = models.TextField(max_length=500, blank=False, default='')  # Specify the default value as an empty string
+    description = models.TextField(max_length=500, blank=False)  # Specify the default value as an empty string
     members = models.ManyToManyField('User')
 
 
@@ -54,12 +54,7 @@ class Invite(models.Model):
     status = models.CharField(max_length=20, choices=(('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')), default=None)
     
 
-class Team(models.Model):
-    """Model used for team creation and team related information."""
 
-    name = models.CharField(max_length=50, blank=False)
-    description = models.TextField(max_length=500, blank=False)
-    members = models.ManyToManyField(User)
 
 
 
