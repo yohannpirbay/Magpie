@@ -1,5 +1,57 @@
 {% extends 'base_content.html' %}
 {% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'dashboard.js' %}"></script>
+  
+
+</head>
+
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>Welcome to your dashboard {{ user.username }}</h1>
+        <p>
+          <a href="{% url 'send_invitation' user_id=user.id %}" class="btn btn-lg btn-secondary">
+            Send Invites
+          </a>
+        </p>
+
+        <h3>Received Invitations</h3>
+        <ul>
+          {% for invite in received_invitations %}
+          <li id="invite-{{ invite.id }}">
+            You {{ user.username }} have been invited to join {{ invite.team.name }} by {{ invite.sender.username }}.
+            <a href="javascript:void(0);" onclick="acceptInvitation({{ invite.id }})">Accept</a> |
+            <a href="javascript:void(0);" onclick="declineInvitation({{ invite.id }})">Decline</a>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        
+
+
+
+        <h3>Sent Invitations</h3>
+        <ul>
+          {% for invite in sent_invitations %}
+          <li>
+            You have sent an invitation to {{ invite.recipient.username }} to join {{ invite.team.name }}.
+          </li>
+          {% endfor %}
+        </ul>
+
+      </div>
 <div class="container">
   <div class="row">
     <div class="col-12">
@@ -11,5 +63,7 @@
         </p>
     </div>
   </div>
-</div>
+
+</body>
+</html>
 {% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base_content.html' %}
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+</head>
+
+<body>
+  {% block content %}
+  <div class="container">
+    <h3>Send Invitation</h3>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="user">Select User:</label>
+        <select name="user" id="user">
+          {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="team">Select Team:</label>
+        <select name="team" id="team">
+          {% for user_team in user_teams %}
+            <option value="{{ user_team.id }}">{{ user_team.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Send Invitation</button>
+    </form>
+
+    
+
+  </div>
+  {% endblock %}
+</body>
+
+</html>

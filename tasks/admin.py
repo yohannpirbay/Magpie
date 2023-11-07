@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Team
+from .models import User, Team, Invite
 
 
 @admin.register(User)
@@ -23,3 +23,8 @@ class TeamAdmin(admin.ModelAdmin):
 
     # Change the name of the display column
     display_members.short_description = 'Members'
+    
+@admin.register(Invite)
+class InviteAdmin(admin.ModelAdmin):
+    list_display = ('sender', 'recipient', 'team', 'status', )
+
