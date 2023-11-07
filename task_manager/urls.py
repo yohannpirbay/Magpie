@@ -30,4 +30,5 @@ urlpatterns = [
     path('accept_invite/<int:invite_id>/', views.accept_invite, name='accept_invite'),
     path('decline_invite/<int:invite_id>/', views.decline_invite, name='decline_invite'),
     path('dashboard/send-invitation/<int:user_id>/',  views.send_invitation, name='send_invitation'),
+    path('dashboard/create_team/', views.create_team_view, name='create_team'),
 ]

@@ -1,29 +1,30 @@
 from django.contrib import admin
-from .models import User  # Import your custom User model
-from .models import Team, Invite
+from .models import User, Team
 
+
+@admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    """Configuration of the admin interface for Users. """
+    """Configuration of the admin interface for users."""
 
-    list_display = ['username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams', 'id']
+    list_display = [
+        'username', 'first_name', 'last_name', 'email', 'is_active',
+    ]
 
-    def display_teams(self, obj):
-        # Get the user's team memberships and concatenate the team names into a string
-        team_names = ', '.join([team.name for team in obj.teams.all()])
-        return team_names
 
-    display_teams.short_description = 'Teams'  # Custom column name in admin interface
-
+@admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    """Configuration of the admin interface for teams."""
 
+    list_display = ['name', 'description', 'display_members']
+
+    def display_members(self, obj):
+        # Create a method to display members of each time as we can't directly display 'members'
+        return ", ".join([member.username for member in obj.members.all()])
+
+    # Change the name of the display column
+    display_members.short_description = 'Members'
+    
 @admin.register(Invite)
 class InviteAdmin(admin.ModelAdmin):
     list_display = ('sender', 'recipient', 'team', 'status', )
 
-
-
-
-# Register your models here.
-admin.site.register(User, UserAdmin)
-admin.site.register(Team, TeamAdmin)

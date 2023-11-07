@@ -52,3 +52,14 @@ class Invite(models.Model):
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_invitations', default=None)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None)
     status = models.CharField(max_length=20, choices=(('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')), default=None)
+    
+
+class Team(models.Model):
+    """Model used for team creation and team related information."""
+
+    name = models.CharField(max_length=50, blank=False)
+    description = models.TextField(max_length=500, blank=False)
+    members = models.ManyToManyField(User)
+
+
+

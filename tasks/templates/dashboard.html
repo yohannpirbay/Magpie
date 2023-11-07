@@ -52,6 +52,15 @@
         </ul>
 
       </div>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1>Welcome to your dashboard {{ user.username }}</h1>
+        <p>
+            <a href='{% url 'create_team' %}' class="btn btn-lg btn-secondary">
+              Create Team
+            </a>
+        </p>
     </div>
   </div>
 

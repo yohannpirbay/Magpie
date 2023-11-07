@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm
 from tasks.helpers import login_prohibited
 from .models import Team, Invite, User # Import your Team model
 from django.http import HttpResponseRedirect
@@ -251,3 +251,18 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+
+@login_required()
+def create_team_view(request):
+    """Display the team creation screen and handles team creations."""
+
+    if request.method == 'POST':
+        form = TeamForm(request.POST)
+        if form.is_valid():
+            team = form.save()
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+    else:
+        form = TeamForm()
+    return render(request, 'create_team.html', {'form': form})
+
