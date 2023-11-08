@@ -1,0 +1,20 @@
+[
+    {
+      "model": "tasks.Task",
+      "pk": 1,
+      "fields": {
+        "title": "Task1",
+        "description": "Build the system",
+        "assignedUsername": "@johndoe"
+      }
+    },
+    {
+        "model": "tasks.Task",
+        "pk": 2,
+        "fields": {
+          "title": "Task2",
+          "description": "Create the dependencies",
+          "assignedUsername": "@thisEmailInvalid"
+        }
+      }
+  ]

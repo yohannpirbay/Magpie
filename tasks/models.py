@@ -44,9 +44,9 @@ class User(AbstractUser):
 class Task(models.Model):
     title = models.CharField(max_length=15, unique=False, blank=False)
     description = models.CharField(max_length=120, blank=False)
-    assignedUsername = models.CharField(unique=False, 
+    assignedUsername = models.CharField(max_length=30, 
                                         blank=False, 
-                                        max_length=30,
+                                        unique=False,
                                         validators=[RegexValidator(
                                             regex=r'^@\w{3,}$',
                                             message='Username must consist of @ followed by at least three alphanumericals'

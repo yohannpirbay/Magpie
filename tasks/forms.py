@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator
-from .models import User
+from .models import User, Task
 
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
@@ -127,3 +127,16 @@ class TaskForm(forms.Form):
         if not User.objects.filter(username = assigned_Username).exists():
             raise forms.ValidationError("An account using this email does not exist")
         return assigned_Username
+    
+    #def save(self):
+    #    """Save a new task."""
+    #    if self.is_valid():
+    #        title = self.cleaned_data.get('title'),
+    #        description = self.cleaned_data.get('description'),
+    #        assignedUsername = self.cleaned_data.get('assignedUsername'),
+    #        
+    #        task = Task(title = title, description = description, assignedUsername = assignedUsername)
+    #        task.save()
+    #        return task
+    #    else:
+    #        return None
