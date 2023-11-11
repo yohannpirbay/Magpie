@@ -41,13 +41,14 @@ class TaskFormTestCase(TestCase):
         form = TaskForm(data=self.form_input)
         self.assertFalse(form.is_valid())
 
-    #def test_form_must_save_correctly(self):
-    #    form = TaskForm(data=self.form_input)
-    #    before_count = Task.objects.count()
-    #    form.save()
-    #    after_count = Task.objects.count()
-    #    self.assertEqual(after_count, before_count+1)
-    #    task = Task.objects.get(assignedUsername='@johndoe')
-    #    self.assertEqual(task.title, 'Task1')
-    #    self.assertEqual(task.description, 'Build the system')
+    def test_form_must_save_correctly(self):
+        form = TaskForm(data=self.form_input)
+        before_count = Task.objects.count()
+        if form.is_valid():
+            form.save()
+        after_count = Task.objects.count()
+        self.assertEqual(after_count, before_count+1)
+        task = Task.objects.get(assignedUsername='@johndoe')
+        self.assertEqual(task.title, 'Task1')
+        self.assertEqual(task.description, 'Build the system')
 

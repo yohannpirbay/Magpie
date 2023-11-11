@@ -110,17 +110,12 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
         return user
     
 
-class TaskForm(forms.Form):
-    title = forms.CharField(max_length=15, required=True)
-    description = forms.CharField(max_length=120,
-                                  required=True,
-                                  widget=forms.Textarea)
-    assignedUsername = forms.CharField(max_length=30, 
-                                       required=True,
-                                       validators=[RegexValidator(
-                                            regex=r'^@\w{3,}$',
-                                            message='Username must consist of @ followed by at least three alphanumericals'
-                                        )])
+class TaskForm(forms.ModelForm):
+    class Meta:
+        """Form options."""
+
+        model = Task
+        fields = ['title', 'description', 'assignedUsername']
 
     def clean_assignedUsername(self):
         assigned_Username = self.cleaned_data.get("assignedUsername")
@@ -128,15 +123,13 @@ class TaskForm(forms.Form):
             raise forms.ValidationError("An account using this email does not exist")
         return assigned_Username
     
-    #def save(self):
-    #    """Save a new task."""
-    #    if self.is_valid():
-    #        title = self.cleaned_data.get('title'),
-    #        description = self.cleaned_data.get('description'),
-    #        assignedUsername = self.cleaned_data.get('assignedUsername'),
-    #        
-    #        task = Task(title = title, description = description, assignedUsername = assignedUsername)
-    #        task.save()
-    #        return task
-    #    else:
-    #        return None
+    def save(self, commit = True):
+        """Save a new task."""
+        #before saving check form.is_valid in the outside view handling the form
+        title = self.cleaned_data.get('title')
+        description = self.cleaned_data.get('description')
+        assignedUsername = self.cleaned_data.get('assignedUsername')            
+        task = Task(title = title, description = description, assignedUsername = assignedUsername)
+        if commit:
+            task.save()
+        return task
