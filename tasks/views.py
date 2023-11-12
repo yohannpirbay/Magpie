@@ -15,6 +15,9 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from .forms import InvitationForm
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.db import transaction
+
 
 def accept_or_decline_invite(request, invite_id, action):
     invite = Invite.objects.get(id=invite_id)
@@ -253,16 +256,58 @@ class SignUpView(LoginProhibitedMixin, FormView):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 
-@login_required()
+# @login_required()
+# def create_team_view(request):
+#     """Display the team creation screen and handles team creations."""
+#
+#     if request.method == 'POST':
+#         form = TeamForm(request.POST)
+#         if form.is_valid():
+#             team = form.save()
+#             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+#     else:
+#         form = TeamForm()
+#     return render(request, 'create_team.html', {'form': form})
+
+
+@login_required
+def team_members(request, team_id):
+    team = get_object_or_404(Team, pk=team_id)
+    # Ensure the user is a member of the team
+    if request.user.teams.filter(id=team_id).exists():
+        members = team.members.all()
+        return render(request, 'team_members.html', {'team': team, 'members': members})
+    else:
+        messages.error(request, "You are not authorized to view this team's members.")
+        return redirect('dashboard')
+
+@login_required
 def create_team_view(request):
     """Display the team creation screen and handles team creations."""
-
     if request.method == 'POST':
         form = TeamForm(request.POST)
         if form.is_valid():
-            team = form.save()
-            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+            try:
+                with transaction.atomic():
+                    team = form.save()
+                    # Add the current user to the team's members
+                    team.members.add(request.user)
+                    team.save()
+
+                    request.user.add_team(team)
+                    request.user.save()
+                    # Add a success message
+                    messages.success(request, 'Team created successfully!')
+                    return redirect('dashboard')
+            except Exception as e:
+                # Log the exception e here for debugging
+                messages.error(request, f"An error occurred: {e}")
+        else:
+            # Add an error message if the form is not valid
+            messages.error(request, 'There was an error creating the team.')
     else:
         form = TeamForm()
     return render(request, 'create_team.html', {'form': form})
+
+
 

@@ -47,6 +47,10 @@ class User(AbstractUser):
     def get_teams(self):
         return self.teams.all()
 
+    def add_team(self, team):
+        self.teams.add(team)
+
+
 class Invite(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_invitations', default=None)
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_invitations', default=None)
