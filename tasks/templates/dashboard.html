@@ -10,7 +10,7 @@
   <title>Dashboard</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{% static 'dashboard.js' %}"></script>
-  
+
 
 </head>
 
@@ -21,6 +21,13 @@
     <div class="row">
       <div class="col-12">
         <h1>Welcome to your dashboard {{ user.username }}</h1>
+          {% if messages %}
+              <div class="messages">
+                {% for message in messages %}
+                    <div{% if message.tags %} class="alert {{ message.tags }}"{% endif %}>{{ message }}</div>
+                {% endfor %}
+              </div>
+          {% endif %}
       <p>
             <a href='{% url 'create_team' %}' class="btn btn-lg btn-secondary">
               Create Team
@@ -32,6 +39,18 @@
           </a>
         </p>
 
+          <!-- Teams Section -->
+        <h3>Your Teams</h3>
+        <ul>
+          {% for team in user.teams.all %}
+            <li>
+              {{ team.name }} - <a href="{% url 'team_members' team.id %}" class="btn btn-sm btn-primary">View Team Members</a>
+            </li>
+          {% empty %}
+            <li>You are not a member of any teams.</li>
+          {% endfor %}
+        </ul>
+
         <h3>Received Invitations</h3>
         <ul>
           {% for invite in received_invitations %}
@@ -39,11 +58,12 @@
             You {{ user.username }} have been invited to join {{ invite.team.name }} by {{ invite.sender.username }}.
             <a href="javascript:void(0);" onclick="acceptInvitation({{ invite.id }})">Accept</a> |
             <a href="javascript:void(0);" onclick="declineInvitation({{ invite.id }})">Decline</a>
-            
+
           </li>
           {% endfor %}
         </ul>
-        
+
+
 
 
 
