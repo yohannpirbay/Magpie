@@ -123,6 +123,23 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_invalid()
 
 
+    def test_email_has_special_symbol_in_domain_name(self):
+        self.user.email = 'username@mail-provider.cc'
+        self._assert_user_is_valid()
+
+    def test_email_has_domain_in_IP_address_literal(self):
+        self.user.email = 'jsmith@[192.168.2.1]'
+        self._assert_user_is_valid()
+
+    def test_email_has_name_in_per_cent_symbol(self):
+        self.user.email = 'user%example.com@example.org'
+        self._assert_user_is_valid()
+
+    def test_email_has_name_with_slashes(self):
+        self.user.email = 'name/surname@example.com'
+        self._assert_user_is_valid()
+
+
     def test_full_name_must_be_correct(self):
         full_name = self.user.full_name()
         self.assertEqual(full_name, "John Doe")
