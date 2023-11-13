@@ -67,3 +67,5 @@ class TeamFormTestCase(TestCase):
         self.assertEqual(form.errors['description'], ['This field is required.'])
         self.assertEqual(form.errors['members'], ['This field is required.'])
 
+        #only has to have 4 tests in form cuz some ar emodel tests so change this tmrw
+
