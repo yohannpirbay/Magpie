@@ -8,8 +8,27 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm
 from tasks.helpers import login_prohibited
+from .models import Team, Invite, User # Import your Team model
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+from .forms import InvitationForm
+from django.http import JsonResponse
+
+def accept_or_decline_invite(request, invite_id, action):
+    invite = Invite.objects.get(id=invite_id)
+    if invite.recipient == request.user:
+        if action == 'accept':
+            invite.status = 'accepted'
+            invite.save()
+            request.user.teams.add(invite.team)
+        elif action == 'decline':
+            invite.status = 'declined'
+            invite.save()
+
+    return JsonResponse({'message': 'Invitation updated successfully'})
+
 
 
 @login_required
@@ -17,7 +36,84 @@ def dashboard(request):
     """Display the current user's dashboard."""
 
     current_user = request.user
-    return render(request, 'dashboard.html', {'user': current_user})
+
+    # Get the user's invitations
+    invitations = Invite.objects.filter(recipient=current_user)
+    sent_invitations = Invite.objects.filter(sender=current_user, status='pending')  # Query sent invitations by the user
+
+    received_invitations = Invite.objects.filter(recipient=current_user, status='pending')
+
+
+    context = {
+        'sent_invitations': sent_invitations,
+        'received_invitations': received_invitations,
+        'user' : current_user,
+        # Other context variables
+    }
+
+    return render(request, 'dashboard.html', context)
+
+
+'''Managing the accept invite and decline invite  and adding it into dashboard.html'''
+
+
+@login_required
+def accept_invite(request, invite_id):
+    invite = Invite.objects.get(id=invite_id)
+    if invite.recipient == request.user:
+        # Update the status to "accepted"
+        invite.status = 'accepted'
+        invite.save()
+
+        print("I AM INSIDE ACCEPT INVITE VIEW")
+        # Add the team to the user's teams
+        request.user.teams.add(invite.team)
+
+    # Redirect back to the dashboard
+    return redirect('dashboard')
+
+@login_required
+def decline_invite(request, invite_id):
+    invite = Invite.objects.get(id=invite_id)
+    if invite.recipient == request.user:
+        # Update the status to "declined"
+        invite.status = 'declined'
+        invite.save()
+    return redirect('dashboard')
+
+@login_required
+def send_invitation(request, user_id):
+    if request.method == 'POST':
+        form = InvitationForm(request.POST, user=request.user)
+
+        if form.is_valid():
+            # Get the selected user, team, and the logged-in sender
+            user = form.cleaned_data['user']
+            team = form.cleaned_data['team']
+            sender = request.user
+            status = 'pending'  # You can set the default status here
+
+            # Create a new Invite instance
+            invite = Invite(sender=sender, recipient=user, team=team, status=status)
+
+            # Save the invitation to the database
+            invite.save()
+
+            # Optionally, send notifications or emails to the recipient
+
+            # Redirect to a success page or back to the dashboard
+            return redirect('dashboard')
+
+    else:
+        form = InvitationForm(user=request.user)
+
+    context = {
+        'form': form,
+        'user_teams': request.user.teams.all(),
+        'users': User.objects.all()
+    }
+
+    return render(request, 'send_invitation.html', context)
 
 
 @login_prohibited
@@ -70,12 +166,14 @@ class LogInView(LoginProhibitedMixin, View):
         """Handle log in attempt."""
 
         form = LogInForm(request.POST)
-        self.next = request.POST.get('next') or settings.REDIRECT_URL_WHEN_LOGGED_IN
+        self.next = request.POST.get(
+            'next') or settings.REDIRECT_URL_WHEN_LOGGED_IN
         user = form.get_user()
         if user is not None:
             login(request, user)
             return redirect(self.next)
-        messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
+        messages.add_message(request, messages.ERROR,
+                             "The credentials provided were invalid!")
         return self.render()
 
     def render(self):
@@ -115,7 +213,8 @@ class PasswordView(LoginRequiredMixin, FormView):
     def get_success_url(self):
         """Redirect the user after successful password change."""
 
-        messages.add_message(self.request, messages.SUCCESS, "Password updated!")
+        messages.add_message(
+            self.request, messages.SUCCESS, "Password updated!")
         return reverse('dashboard')
 
 
@@ -133,7 +232,8 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         """Return redirect URL after successful update."""
-        messages.add_message(self.request, messages.SUCCESS, "Profile updated!")
+        messages.add_message(
+            self.request, messages.SUCCESS, "Profile updated!")
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
 
@@ -151,3 +251,18 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
     def get_success_url(self):
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+
+
+@login_required()
+def create_team_view(request):
+    """Display the team creation screen and handles team creations."""
+
+    if request.method == 'POST':
+        form = TeamForm(request.POST)
+        if form.is_valid():
+            team = form.save()
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+    else:
+        form = TeamForm()
+    return render(request, 'create_team.html', {'form': form})
+
