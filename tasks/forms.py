@@ -1,10 +1,29 @@
 """Forms for the tasks app."""
 from django import forms
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.core.validators import RegexValidator
-from .models import User, Task
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+from .models import User, Team, Task
 
+
+
+
+User = get_user_model()
+
+class InvitationForm(forms.Form):
+    user = forms.ModelChoiceField(queryset=User.objects.all(), label='Select User')
+    team = forms.ModelChoiceField(queryset=Team.objects.all(), label='Select Team')
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(InvitationForm, self).__init__(*args, **kwargs)
+
+    def clean_user(self):
+        user = self.cleaned_data.get('user')
+        if user == self.user:
+            raise ValidationError("You cannot send an invitation to yourself.")
+        return user
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
 
@@ -31,6 +50,7 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ['first_name', 'last_name', 'username', 'email']
 
+
 class NewPasswordMixin(forms.Form):
     """Form mixing for new_password and password_confirmation fields."""
 
@@ -41,7 +61,7 @@ class NewPasswordMixin(forms.Form):
             regex=r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).*$',
             message='Password must contain an uppercase character, a lowercase '
                     'character and a number'
-            )]
+        )]
     )
     password_confirmation = forms.CharField(label='Password confirmation', widget=forms.PasswordInput())
 
@@ -62,7 +82,7 @@ class PasswordForm(NewPasswordMixin):
 
     def __init__(self, user=None, **kwargs):
         """Construct new form instance with a user instance."""
-        
+
         super().__init__(**kwargs)
         self.user = user
 
@@ -147,3 +167,13 @@ class TaskForm(forms.ModelForm):
         if commit:
             task.save()
         return task
+
+
+
+class TeamForm(forms.ModelForm):
+    """Form to create a team."""
+    class Meta:
+        """Form options."""
+
+        model = Team
+        fields = ['name', 'description', 'members']
