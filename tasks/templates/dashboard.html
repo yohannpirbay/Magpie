@@ -44,7 +44,7 @@
         <ul>
           {% for team in user.teams.all %}
             <li>
-              {{ team.name }} - <a href="{% url 'team_members' team.id %}" class="btn btn-sm btn-primary">View Team Members</a>
+              {{ team.name }} - <a href="{% url 'team_members' team.id %}" class="btn btn-sm btn-primary">View Team Members</a><br><br><br>
             </li>
           {% empty %}
             <li>You are not a member of any teams.</li>
