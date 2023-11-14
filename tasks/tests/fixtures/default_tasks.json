@@ -5,7 +5,8 @@
       "fields": {
         "title": "Task1",
         "description": "Build the system",
-        "assignedUsername": "@johndoe"
+        "assignedUsername": "@johndoe",
+        "dueDate": "2032-12-25"
       }
     },
     {
@@ -14,7 +15,8 @@
         "fields": {
           "title": "Task2",
           "description": "Create the dependencies",
-          "assignedUsername": "@thisEmailInvalid"
+          "assignedUsername": "@thisEmailInvalid",
+          "dueDate": "2032-12-25"
         }
       }
   ]

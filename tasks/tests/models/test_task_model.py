@@ -86,6 +86,19 @@ class TaskModelTestCase(TestCase):
         self._assert_task_is_invalid()
 
 
+    def test_dueDate_cannot_be_blank(self):
+        self.task.dueDate = ''
+        self._assert_task_is_invalid()
+
+    def test_dueDate_default_value(self):
+        your_model_instance = Task.objects.create(
+            title='Test Title',
+            description='Test Description',
+            assignedUsername='@testUser'
+        )
+
+        self.assertEqual(str(your_model_instance.dueDate), "2032-12-25")
+
     def _assert_task_is_valid(self):
         try:
             self.task.full_clean()

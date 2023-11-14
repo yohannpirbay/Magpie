@@ -51,4 +51,5 @@ class Task(models.Model):
                                             regex=r'^@\w{3,}$',
                                             message='Username must consist of @ followed by at least three alphanumericals'
                                         )])
+    dueDate = models.DateField(blank=False, default="2032-12-25")
     

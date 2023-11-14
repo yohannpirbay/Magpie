@@ -12,6 +12,7 @@ class TaskFormTestCase(TestCase):
             'title': 'Task1',
             'description': 'Build the system',
             'assignedUsername': '@johndoe',
+            'dueDate': '2032-12-25'
         }
         self.user = User.objects.create(
             username = "@johndoe",
@@ -30,11 +31,17 @@ class TaskFormTestCase(TestCase):
         form = TaskForm(data=form_data)
         self.assertFalse(form.is_valid())
 
+    def test_clean_dueDate(self):
+        self.form_input['dueDate'] = '2015-10-21'
+        form = TaskForm(data=self.form_input)
+        self.assertFalse(form.is_valid())
+
     def test_form_has_necessary_fields(self):
         form = TaskForm()
         self.assertIn('title', form.fields)
         self.assertIn('description', form.fields)
         self.assertIn('assignedUsername', form.fields)
+        self.assertIn('dueDate', form.fields)
 
     def test_form_uses_model_validation(self):
         self.form_input['assignedUsername'] = 'badusername'
@@ -51,4 +58,5 @@ class TaskFormTestCase(TestCase):
         task = Task.objects.get(assignedUsername='@johndoe')
         self.assertEqual(task.title, 'Task1')
         self.assertEqual(task.description, 'Build the system')
+        self.assertEqual(str(task.dueDate), '2032-12-25')
 
