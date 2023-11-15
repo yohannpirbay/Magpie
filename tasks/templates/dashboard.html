@@ -26,6 +26,34 @@
           <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             My Teams <span class="badge bg-primary rounded-pill">14</span>
           </a>
+
+        """
+        </p>
+
+          <!-- Teams Section -->
+        <h3>Your Teams</h3>
+        <ul>
+          {% for team in user.teams.all %}
+            <li>
+              {{ team.name }} - <a href="{% url 'team_members' team.id %}" class="btn btn-sm btn-primary">View Team Members</a><br><br><br>
+            </li>
+          {% empty %}
+            <li>You are not a member of any teams.</li>
+          {% endfor %}
+        </ul>
+
+        <h3>Received Invitations</h3>
+        <ul>
+          {% for invite in received_invitations %}
+          <li id="invite-{{ invite.id }}">
+            You {{ user.username }} have been invited to join {{ invite.team.name }} by {{ invite.sender.username }}.
+            <a href="javascript:void(0);" onclick="acceptInvitation({{ invite.id }})">Accept</a> |
+            <a href="javascript:void(0);" onclick="declineInvitation({{ invite.id }})">Decline</a>
+
+          </li>
+          {% endfor %}
+  """
+
         </ul>
       </div>
       <!-- end smaller container -->
