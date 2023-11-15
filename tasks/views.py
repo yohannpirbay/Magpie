@@ -38,23 +38,7 @@ def accept_or_decline_invite(request, invite_id, action):
 def dashboard(request):
     """Display the current user's dashboard."""
 
-    current_user = request.user
-
-    # Get the user's invitations
-    invitations = Invite.objects.filter(recipient=current_user)
-    sent_invitations = Invite.objects.filter(sender=current_user, status='pending')  # Query sent invitations by the user
-
-    received_invitations = Invite.objects.filter(recipient=current_user, status='pending')
-
-
-    context = {
-        'sent_invitations': sent_invitations,
-        'received_invitations': received_invitations,
-        'user' : current_user,
-        # Other context variables
-    }
-
-    return render(request, 'dashboard.html', context)
+    return render(request, 'dashboard.html')
 
 
 '''Managing the accept invite and decline invite  and adding it into dashboard.html'''
@@ -309,5 +293,26 @@ def create_team_view(request):
         form = TeamForm()
     return render(request, 'create_team.html', {'form': form})
 
+@login_required
+def invites_view(request):
+    """Display team invitations sent to user"""
+    
+    current_user = request.user
+    
+    # Get the user's invitations
+    invitations = Invite.objects.filter(recipient=current_user)
+    sent_invitations = Invite.objects.filter(sender=current_user, status='pending')  # Query sent invitations by the user
 
+    received_invitations = Invite.objects.filter(recipient=current_user, status='pending')
+
+
+    context = {
+        'sent_invitations': sent_invitations,
+        'received_invitations': received_invitations,
+        'user' : current_user,
+        # Other context variables
+    }
+
+    
+    return render(request, 'invites.html', context)
 
