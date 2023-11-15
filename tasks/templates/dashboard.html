@@ -26,24 +26,23 @@
             My Teams <span class="badge bg-primary rounded-pill">14</span>
           </a>
         </ul>
+        """
+        </p>
 
-{#        """#}
-{#        </p>#}
-{##}
-{##}
-{##}
-{##}
-{#        <h3>Received Invitations</h3>#}
-{#        <ul>#}
-{#          {% for invite in received_invitations %}#}
-{#          <li id="invite-{{ invite.id }}">#}
-{#            You {{ user.username }} have been invited to join {{ invite.team.name }} by {{ invite.sender.username }}.#}
-{#            <a href="javascript:void(0);" onclick="acceptInvitation({{ invite.id }})">Accept</a> |#}
-{#            <a href="javascript:void(0);" onclick="declineInvitation({{ invite.id }})">Decline</a>#}
-{##}
-{#          </li>#}
-{#          {% endfor %}#}
-{#  """#}
+
+
+
+        <h3>Received Invitations</h3>
+        <ul>
+          {% for invite in received_invitations %}
+          <li id="invite-{{ invite.id }}">
+            You {{ user.username }} have been invited to join {{ invite.team.name }} by {{ invite.sender.username }}.
+            <a href="javascript:void(0);" onclick="acceptInvitation({{ invite.id }})">Accept</a> |
+            <a href="javascript:void(0);" onclick="declineInvitation({{ invite.id }})">Decline</a>
+
+          </li>
+          {% endfor %}
+  """
 
         </ul>
       </div>
@@ -60,7 +59,6 @@
             <a href='#' class="btn btn-lg btn-primary">Create Task</a>
           </div>
         </p>
-
 
 
       <!-- tasks section -->
