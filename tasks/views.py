@@ -319,3 +319,8 @@ def invites_view(request):
     
     return render(request, 'invites.html', context)
 
+def My_team(request):
+
+    return render(request, 'My_team.html')
+
+

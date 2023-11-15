@@ -22,10 +22,10 @@
           <a href='{% url 'invites' %}' class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             Invites <span class="badge bg-primary rounded-pill">2</span>
           </a>
-          <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          <a href='{% url 'My_team' %}' class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             My Teams <span class="badge bg-primary rounded-pill">14</span>
           </a>
-
+        </ul>
         """
         </p>
 
@@ -65,15 +65,6 @@
           </div>
         </p>
 
-          <!-- idk who's code this is -->
-            {% if messages %}
-                <div class="messages">
-                  {% for message in messages %}
-                      <div{% if message.tags %} class="alert {{ message.tags }}"{% endif %}>{{ message }}</div>
-                  {% endfor %}
-                </div>
-            {% endif %}
-      <!-- end wider container -->
 
       <!-- tasks section -->
   <p>
