@@ -22,27 +22,27 @@
           <a href='{% url 'invites' %}' class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             Invites <span class="badge bg-primary rounded-pill">2</span>
           </a>
-          <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          <a href='{% url 'My_team' %}' class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             My Teams <span class="badge bg-primary rounded-pill">14</span>
           </a>
-
-        """
-        </p>
-
-
-
-
-        <h3>Received Invitations</h3>
-        <ul>
-          {% for invite in received_invitations %}
-          <li id="invite-{{ invite.id }}">
-            You {{ user.username }} have been invited to join {{ invite.team.name }} by {{ invite.sender.username }}.
-            <a href="javascript:void(0);" onclick="acceptInvitation({{ invite.id }})">Accept</a> |
-            <a href="javascript:void(0);" onclick="declineInvitation({{ invite.id }})">Decline</a>
-
-          </li>
-          {% endfor %}
-  """
+        </ul>
+{#        """#}
+{#        </p>#}
+{##}
+{##}
+{##}
+{##}
+{#        <h3>Received Invitations</h3>#}
+{#        <ul>#}
+{#          {% for invite in received_invitations %}#}
+{#          <li id="invite-{{ invite.id }}">#}
+{#            You {{ user.username }} have been invited to join {{ invite.team.name }} by {{ invite.sender.username }}.#}
+{#            <a href="javascript:void(0);" onclick="acceptInvitation({{ invite.id }})">Accept</a> |#}
+{#            <a href="javascript:void(0);" onclick="declineInvitation({{ invite.id }})">Decline</a>#}
+{##}
+{#          </li>#}
+{#          {% endfor %}#}
+{#  """#}
 
         </ul>
       </div>
@@ -60,15 +60,7 @@
           </div>
         </p>
 
-          <!-- idk who's code this is -->
-            {% if messages %}
-                <div class="messages">
-                  {% for message in messages %}
-                      <div{% if message.tags %} class="alert {{ message.tags }}"{% endif %}>{{ message }}</div>
-                  {% endfor %}
-                </div>
-            {% endif %}
-      <!-- end wider container -->
+
 
       <!-- tasks section -->
   <p>
