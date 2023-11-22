@@ -2,17 +2,22 @@
 from django import forms
 from django.test import TestCase
 from tasks.forms import TaskForm
-from tasks.models import User,Task
+from tasks.models import User,Task,Team
 
 class TaskFormTestCase(TestCase):
     """Unit tests of the task form."""
 
     def setUp(self):
+        self.team = Team.objects.create(
+            name = 'BronzeBulls',
+            description = 'We are the bulls'
+        )
         self.form_input = {
             'title': 'Task1',
             'description': 'Build the system',
             'assignedUsername': '@johndoe',
-            'dueDate': '2032-12-25'
+            'dueDate': '2032-12-25',
+            'team': self.team
         }
         self.user = User.objects.create(
             username = "@johndoe",
@@ -42,6 +47,7 @@ class TaskFormTestCase(TestCase):
         self.assertIn('description', form.fields)
         self.assertIn('assignedUsername', form.fields)
         self.assertIn('dueDate', form.fields)
+        self.assertIn('team', form.fields)
 
     def test_form_uses_model_validation(self):
         self.form_input['assignedUsername'] = 'badusername'
@@ -59,4 +65,5 @@ class TaskFormTestCase(TestCase):
         self.assertEqual(task.title, 'Task1')
         self.assertEqual(task.description, 'Build the system')
         self.assertEqual(str(task.dueDate), '2032-12-25')
+        self.assertEqual(task.team, self.team)
 

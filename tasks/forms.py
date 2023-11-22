@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth import authenticate, get_user_model
 from django.core.validators import RegexValidator
 from django.utils import timezone
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError 
 from .models import User, Team, Task
 
 
@@ -136,7 +136,12 @@ class TaskForm(forms.ModelForm):
         """Form options."""
 
         model = Task
-        fields = ['title', 'description', 'assignedUsername', 'dueDate']
+        fields = ['title', 'description', 'assignedUsername', 'dueDate', 'team']
+
+        team = forms.ModelChoiceField(
+            queryset=Team.objects.all(),
+            #widget=forms.Select(attrs={'class': 'select2'}),
+        )
 
         widgets = {
             'dueDate': forms.SelectDateWidget(
@@ -162,8 +167,9 @@ class TaskForm(forms.ModelForm):
         title = self.cleaned_data.get('title')
         description = self.cleaned_data.get('description')
         assignedUsername = self.cleaned_data.get('assignedUsername')
-        dueDate = self.cleaned_data.get('dueDate')            
-        task = Task(title = title, description = description, assignedUsername = assignedUsername, dueDate = dueDate)
+        dueDate = self.cleaned_data.get('dueDate')
+        team = self.cleaned_data.get('team')          
+        task = Task(title = title, description = description, assignedUsername = assignedUsername, dueDate = dueDate, team = team)
         if commit:
             task.save()
         return task

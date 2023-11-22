@@ -1,17 +1,20 @@
 """Unit tests for the Task model."""
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from tasks.models import Task
+from tasks.models import Task, Team, User
 
 class TaskModelTestCase(TestCase):
     """Unit tests for the Task model."""
 
     fixtures = [
-        'tasks/tests/fixtures/default_tasks.json'
+        'tasks/tests/fixtures/default_teams.json',
+        'tasks/tests/fixtures/default_tasks.json',
     ]
 
     def setUp(self):
+        self.team = Team.objects.get(name = 'BronzeBulls')
         self.task = Task.objects.get(assignedUsername='@johndoe')
+        self.task.team = self.team
 
     def test_valid_task(self):
         self._assert_task_is_valid()
@@ -91,13 +94,30 @@ class TaskModelTestCase(TestCase):
         self._assert_task_is_invalid()
 
     def test_dueDate_default_value(self):
-        your_model_instance = Task.objects.create(
+        taskModel = Task.objects.create(
             title='Test Title',
             description='Test Description',
             assignedUsername='@testUser'
         )
+        self.assertEqual(str(taskModel.dueDate), "2032-12-25")
 
-        self.assertEqual(str(your_model_instance.dueDate), "2032-12-25")
+    def test_team_can_be_null(self):
+        self.task.team = None
+        self._assert_task_is_valid()
+
+    def test_team_can_be_blank(self):
+        self.task = Task(
+        title='TaskwithoutTeam',
+        description='This task is not associated with any team',
+        assignedUsername='@user',
+        dueDate='2032-12-25',
+    )
+        self._assert_task_is_valid()
+
+    def test_cascade_deletion_of_tasks(self):
+        self.team.delete()
+        deletedTask = Task.objects.filter(pk = self.task.pk).first()
+        self.assertIsNone(deletedTask)
 
     def _assert_task_is_valid(self):
         try:

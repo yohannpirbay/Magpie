@@ -58,6 +58,7 @@ class Task(models.Model):
                                             message='Username must consist of @ followed by at least three alphanumericals'
                                         )])
     dueDate = models.DateField(blank=False, default="2032-12-25")
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True)
 
     
 

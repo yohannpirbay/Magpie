@@ -6,7 +6,8 @@
         "title": "Task1",
         "description": "Build the system",
         "assignedUsername": "@johndoe",
-        "dueDate": "2032-12-25"
+        "dueDate": "2032-12-25",
+        "team": 1
       }
     },
     {
@@ -16,7 +17,8 @@
           "title": "Task2",
           "description": "Create the dependencies",
           "assignedUsername": "@thisEmailInvalid",
-          "dueDate": "2032-12-25"
+          "dueDate": "2032-12-25",
+          "team": 1
         }
       }
   ]
