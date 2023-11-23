@@ -25,7 +25,10 @@ def accept_or_decline_invite(request, invite_id, action):
         if action == 'accept':
             invite.status = 'accepted'
             invite.save()
-            request.user.teams.add(invite.team)
+            invite.team.members.add(request.user)
+            invite.team.save()
+            request.user.add_team(invite.team)
+            request.user.save()
         elif action == 'decline':
             invite.status = 'declined'
             invite.save()
@@ -51,7 +54,7 @@ def accept_invite(request, invite_id):
         # Update the status to "accepted"
         invite.status = 'accepted'
         invite.save()
-
+        invite.team.members.add(request.user)
         print("I AM INSIDE ACCEPT INVITE VIEW")
         # Add the team to the user's teams
         request.user.teams.add(invite.team)
@@ -256,14 +259,14 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
 @login_required
 def team_members(request, team_id):
-    team = get_object_or_404(Team, pk=team_id)
+     team = get_object_or_404(Team, pk=team_id)
     # Ensure the user is a member of the team
-    if request.user.teams.filter(id=team_id).exists():
-        members = team.members.all()
-        return render(request, 'team_members.html', {'team': team, 'members': members})
-    else:
-        messages.error(request, "You are not authorized to view this team's members.")
-        return redirect('dashboard')
+     if request.user.teams.filter(id=team_id).exists():
+         members = team.members.all()
+         return render(request, 'team_members.html', {'team': team, 'members': members})
+     else:
+         messages.error(request, "You are not authorized to view this team's members.")
+         return redirect('dashboard')
 
 @login_required
 def create_team_view(request):
@@ -316,15 +319,8 @@ def invites_view(request):
     
     return render(request, 'invites.html', context)
 
-@login_required()
-def create_task_view(request):
-    if request.method == 'POST':
-        form = TaskForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('task_list')  # Note: 'task_list' view doesn't exist yet (I don't know if that's something we want yet)
-    else:
-        form = TaskForm()
-    
-    context = {'form': form}
-    return render(request, 'create_task.html', context)
+def My_team(request):
+
+    return render(request, 'My_team.html')
+
+
