@@ -57,8 +57,13 @@ class Invite(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None)
     status = models.CharField(max_length=20, choices=(('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')), default=None)
     
+    
+class Task(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    assignedUsername = models.ForeignKey(User, on_delete=models.CASCADE)
+    dueDate = models.DateField()
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
-
-
-
-
+    def __str__(self):
+        return self.title

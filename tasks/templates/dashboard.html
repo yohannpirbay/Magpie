@@ -38,7 +38,7 @@
         <p>
           <div class="btn-group-lg">
             <a href='{% url 'create_team' %}' class="btn btn-lg btn-primary">Create Team</a>
-            <a href='#' class="btn btn-lg btn-primary">Create Task</a>
+            <a href='{% url 'create_task' %}' class="btn btn-lg btn-primary">Create Task</a>
           </div>
         </p>
 
@@ -55,8 +55,20 @@
       <!-- tasks section -->
   <p>
           <h2>Tasks:</h2>
+
+          <ul>
+            {% for task in tasks %}
+              <li>
+                <strong>Title:</strong> {{ task.title }}<br>
+                <strong>Description:</strong> {{ task.description }}<br>
+                <strong>Due Date:</strong> {{ task.dueDate }}<br>
+                <strong>Team:</strong> {{ task.team }}<br>
+              </li>
+            {% endfor %}
+          </ul>
       
-      <div class="accordion" id="accordionOfTasks">
+      <!--commented out as I want to see if the above code functions-->
+      {% comment %} <div class="accordion" id="accordionOfTasks">
         
         <div class="accordion-item">
           <h2 class="accordion-header">
@@ -101,7 +113,7 @@
       </div>
     </div>
   
-  </p>
+  </p> {% endcomment %}
       <!-- end tasks section -->
       
     </div>
