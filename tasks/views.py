@@ -322,7 +322,7 @@ def create_task_view(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('task_list')  # NOTE: 'task_list' view doesn't exist yet (I don't know if that's something we want yet)
+            return redirect('task_list')  # Note: 'task_list' view doesn't exist yet (I don't know if that's something we want yet)
     else:
         form = TaskForm()
     
