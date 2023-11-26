@@ -19,6 +19,29 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 
 
+
+#idk what this one will do, probably should check: 
+# did you create your first team? => achievemnt, 
+# did you invite your first teammate = > achievement etc..
+def handleAchievements(request):
+    # Implement your logic here
+    # Check if the user has created their first team, invited their first teammate, etc.
+    # If conditions are met, add the corresponding achievements to the user
+
+    # Example:
+    user = request.user
+    if user.teams.exists():
+        user.achievements.add(Achievement.objects.get(name="First Team Created"))
+
+    if user.sent_invitations.exists():
+        user.achievements.add(Achievement.objects.get(name="First Teammate Invited"))
+
+    # Render your template or return a response
+
+
+
+
+
 def accept_or_decline_invite(request, invite_id, action):
     invite = Invite.objects.get(id=invite_id)
     if invite.recipient == request.user:
