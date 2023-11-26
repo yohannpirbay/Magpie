@@ -3,6 +3,13 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
 
+
+class achievements(models.Model):
+    name = models.CharField(max_length=50, blank=False)
+    description = models.TextField(max_length=500, blank=False)  # Specify the default value as an empty string
+    members = models.ManyToManyField('User')
+    
+
 class Team(models.Model):
     name = models.CharField(max_length=50, blank=False)
     description = models.TextField(max_length=500, blank=False)  # Specify the default value as an empty string
