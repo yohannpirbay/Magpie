@@ -1,0 +1,14 @@
+<!-- achievement_popup.html -->
+<div id="achievement-popup" class="achievement-popup">
+    <div class="achievement-content">
+        <img src="{% static 'path/to/achievement_image.png' %}" alt="Achievement Unlocked">
+        <p>{{ achievement.name }} - {{ achievement.description }}</p>
+    </div>
+    <span class="close-popup" onclick="closeAchievementPopup()">&times;</span>
+</div>
+
+<script>
+    function closeAchievementPopup() {
+        document.getElementById('achievement-popup').style.display = 'none';
+    }
+</script>
