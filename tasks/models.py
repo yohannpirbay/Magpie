@@ -4,16 +4,24 @@ from django.db import models
 from libgravatar import Gravatar
 
 
-class achievements(models.Model):
+class Achievement(models.Model):
     name = models.CharField(max_length=50, blank=False)
     description = models.TextField(max_length=500, blank=False)  # Specify the default value as an empty string
     members = models.ManyToManyField('User')
-    
+
 
 class Team(models.Model):
     name = models.CharField(max_length=50, blank=False)
     description = models.TextField(max_length=500, blank=False)  # Specify the default value as an empty string
     members = models.ManyToManyField('User')
+    
+    # Add a signal to trigger the achievement when a team is created
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new:
+            self.creator.achievements.add(Achievement.objects.get(name="First Team Created"))
+
 
 
 class User(AbstractUser):
@@ -63,7 +71,12 @@ class Invite(models.Model):
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_invitations', default=None)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None)
     status = models.CharField(max_length=20, choices=(('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')), default=None)
-    
+     # Add a signal to trigger the achievement when an invitation is sent
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new:
+            self.inviter.achievements.add(Achievement.objects.get(name="First Teammate Invited"))
 
 
 
