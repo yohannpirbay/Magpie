@@ -13,7 +13,7 @@ class TasksConfig(AppConfig):
         self.create_initial_achievements()
 
     def create_initial_achievements(self):
-        from .models import Achievement
+        from .models import Achievement 
 
         # Check if achievements already exist
         if not Achievement.objects.filter(name="First Team Created").exists():
