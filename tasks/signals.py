@@ -6,10 +6,33 @@ from .models import Achievement, Invite, Notification
 
 @receiver(post_save, sender=get_user_model())
 def team_created_achievement(sender, instance, created, **kwargs):
-    # Your signal logic here
-    pass
+        achievement = Achievement.objects.get(name="First Team Created")
+        instance.achievements.add(achievement)
+
+
+        # Trigger the notification with achievement ID
+        message = f"Congratulations! You earned the achievement: {achievement.name}"
+        notification  = Notification.objects.create(user=instance, message=message, achievement_id=achievement.id)
+        # Print the notification details
+        
+        print(f"Notification created - ID: {notification.id}, User: {notification.user}, Message: {notification.message}, Achievement: {notification.achievement}, Created At: {notification.created_at}")
 
 @receiver(post_save, sender=Invite)
 def invitation_sent_achievement(sender, instance, created, **kwargs):
-    # Your signal logic here
-    pass
+    if created:
+        # Get the sender of the invite
+        sender_user = instance.sender
+
+        # Check if the sender's sent_invites is empty
+        if sender_user.sent_invites.count() == 0:
+            achievement = Achievement.objects.get(name="First Invitation")
+            
+            # Add the achievement to the sender
+            sender_user.achievements.add(achievement)
+
+            # Trigger the notification with achievement ID
+            message = f"Congratulations! You earned the achievement: {achievement.name}"
+            notification = Notification.objects.create(user=sender_user, message=message, achievement_id=achievement.id)
+
+            # Print the notification details    
+            print(f"Notification created - ID: {notification.id}, User: {notification.user}, Message: {notification.message}, Achievement: {notification.achievement}, Created At: {notification.created_at}")
