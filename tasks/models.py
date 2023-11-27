@@ -68,6 +68,24 @@ class User(AbstractUser):
         """Return a URL to a miniature version of the user's gravatar."""
         return self.gravatar(size=60)
 
+        
+        
+    
+class Task(models.Model):
+    title = models.CharField(max_length=15, unique=False, blank=False)
+    description = models.CharField(max_length=120, blank=False)
+    assignedUsername = models.CharField(max_length=30, 
+                                        blank=False, 
+                                        unique=False,
+                                        validators=[RegexValidator(
+                                            regex=r'^@\w{3,}$',
+                                            message='Username must consist of @ followed by at least three alphanumericals'
+                                        )])
+    dueDate = models.DateField(blank=False, default="2032-12-25")
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True)
+
+    
+
     def get_teams(self):
         return self.teams.all()
 
