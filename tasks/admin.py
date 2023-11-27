@@ -8,7 +8,8 @@ from .models import User
 
 class UserAdmin(BaseUserAdmin):
     list_display = [
-        'username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams', 'display_achievements'
+        'username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams', 'display_achievements',
+        'display_sent_invites', 'display_received_invites'
     ]
 
     def display_teams(self, obj):
@@ -19,6 +20,13 @@ class UserAdmin(BaseUserAdmin):
         return ", ".join([achievement.name for achievement in obj.achievements.all()])
     display_achievements.short_description = 'Achievements'
 
+    def display_sent_invites(self, obj):
+        return ", ".join([invite.recipient.username for invite in obj.sent_invites.all()])
+    display_sent_invites.short_description = 'Sent Invites'
+
+    def display_received_invites(self, obj):
+        return ", ".join([invite.sender.username for invite in obj.received_invites.all()])
+    display_received_invites.short_description = 'Received Invites'
 
 admin.site.register(User, UserAdmin)
 

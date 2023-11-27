@@ -10,15 +10,16 @@ from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm
 from tasks.helpers import login_prohibited
-from .models import Team, Invite, User # Import your Team model
+from .models import Team, Invite, User, Achievement # Import your Team model
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from .forms import InvitationForm
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db import transaction
+from django.contrib.auth import get_user_model
 
-
+#views.py
 
 #idk what this one will do, probably should check: 
 # did you create your first team? => achievemnt, 
@@ -290,30 +291,42 @@ def team_members(request, team_id):
      else:
          messages.error(request, "You are not authorized to view this team's members.")
          return redirect('dashboard')
+     
+
+
 
 @login_required
 def create_team_view(request):
-    """Display the team creation screen and handles team creations."""
     if request.method == 'POST':
         form = TeamForm(request.POST)
         if form.is_valid():
             try:
                 with transaction.atomic():
-                    team = form.save()
+                    print("00")
+                    team = form.save(commit=False)
+                    print("1")
+                    team.creator = request.user  # Set the creator to the current user
+                    print("2")
+                    
+                    team.save()
+                    print("3")
+
                     # Add the current user to the team's members
                     team.members.add(request.user)
+                    print("4")
                     team.save()
+                    print("5")
 
                     request.user.add_team(team)
+                    print("6")
                     request.user.save()
-                    # Add a success message
+                    print("7")
+
                     messages.success(request, 'Team created successfully!')
                     return redirect('dashboard')
             except Exception as e:
-                # Log the exception e here for debugging
                 messages.error(request, f"An error occurred: {e}")
         else:
-            # Add an error message if the form is not valid
             messages.error(request, 'There was an error creating the team.')
     else:
         form = TeamForm()

@@ -3,18 +3,24 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
 
+#models.py
+
+class Notification(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    message = models.CharField(max_length=255)
+    achievement = models.ForeignKey('Achievement', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
 class Achievement(models.Model):
-    name = models.CharField(max_length=50, blank=False)
-    description = models.TextField(max_length=500, blank=False)  # Specify the default value as an empty string
-    members = models.ManyToManyField('User')
-
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
 
 class Team(models.Model):
     name = models.CharField(max_length=50, blank=False)
+    creator = models.ForeignKey('User', on_delete=models.CASCADE, related_name='created_teams', default=1)
+    members = models.ManyToManyField('User', related_name='teams_joined')
     description = models.TextField(max_length=500, blank=False)  # Specify the default value as an empty string
-    members = models.ManyToManyField('User')
-    
     # Add a signal to trigger the achievement when a team is created
     def save(self, *args, **kwargs):
         is_new = self.pk is None
@@ -37,9 +43,12 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     email = models.EmailField(unique=True, blank=False)
-
     teams = models.ManyToManyField(
         Team, related_name='memberships', blank=True)
+    achievements = models.ManyToManyField('Achievement', blank=True)
+    # Add these fields
+    sent_invites = models.ManyToManyField('Invite', related_name='sent_invites', blank=True)
+    received_invites = models.ManyToManyField('Invite', related_name='received_invites', blank=True)
 
     class Meta:
         """Model options."""
@@ -71,14 +80,4 @@ class Invite(models.Model):
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_invitations', default=None)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None)
     status = models.CharField(max_length=20, choices=(('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')), default=None)
-     # Add a signal to trigger the achievement when an invitation is sent
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        if is_new:
-            self.inviter.achievements.add(Achievement.objects.get(name="First Teammate Invited"))
-
-
-
-
-
+    
