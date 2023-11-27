@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Team, Invite
+from .models import User, Team, Invite,Achievement
 
 
 from django.contrib import admin
@@ -8,12 +8,17 @@ from .models import User
 
 class UserAdmin(BaseUserAdmin):
     list_display = [
-        'username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams'
+        'username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams', 'display_achievements'
     ]
 
     def display_teams(self, obj):
         return ", ".join([team.name for team in obj.teams.all()])
     display_teams.short_description = 'Teams'
+
+    def display_achievements(self, obj):
+        return ", ".join([achievement.name for achievement in obj.achievements.all()])
+    display_achievements.short_description = 'Achievements'
+
 
 admin.site.register(User, UserAdmin)
 
@@ -34,4 +39,9 @@ class TeamAdmin(admin.ModelAdmin):
 @admin.register(Invite)
 class InviteAdmin(admin.ModelAdmin):
     list_display = ('sender', 'recipient', 'team', 'status', )
+
+@admin.register(Achievement)
+class AchievementAdmin(admin.ModelAdmin):
+    list_display = ['name', 'description']
+
 
