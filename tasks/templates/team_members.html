@@ -1,0 +1,23 @@
+{% extends 'base_content.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1>Team Members of {{ team.name }}</h1>
+      <p>Team description: {{ team.description }}</p>
+      <ul>
+        {% for member in members %}
+          <li>
+            {{ member.get_full_name }} - <img src="{{ member.mini_gravatar }}" alt="{{ member.get_full_name }}'s Gravatar">
+          </li>
+        {% endfor %}
+      </ul>
+      <a href="{% url 'dashboard' %}" class="btn btn-lg btn-secondary">Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

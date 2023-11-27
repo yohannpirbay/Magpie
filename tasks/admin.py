@@ -2,13 +2,20 @@ from django.contrib import admin
 from .models import User, Team, Invite
 
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    """Configuration of the admin interface for users."""
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import User
 
+class UserAdmin(BaseUserAdmin):
     list_display = [
-        'username', 'first_name', 'last_name', 'email', 'is_active',
+        'username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams'
     ]
+
+    def display_teams(self, obj):
+        return ", ".join([team.name for team in obj.teams.all()])
+    display_teams.short_description = 'Teams'
+
+admin.site.register(User, UserAdmin)
 
 
 @admin.register(Team)
