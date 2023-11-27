@@ -6,14 +6,8 @@ class TasksConfig(AppConfig):
     name = 'tasks'
     
     def ready(self):
-        # Import your model here to avoid circular import issues
-        from .models import Achievement
-
         # Create achievements when the app is ready
         self.create_initial_achievements()
-
-        # Connect signals in the ready method
-        import tasks.signals  # This will import and connect your signals
 
     @staticmethod
     def create_initial_achievements():
