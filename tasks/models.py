@@ -3,6 +3,19 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
 
+
+class Notification(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    message = models.CharField(max_length=255)
+    achievement = models.ForeignKey('Achievement', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Achievement(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
+
+
 class Team(models.Model):
     name = models.CharField(max_length=50, blank=False)
     description = models.TextField(max_length=500, blank=False)  # Specify the default value as an empty string
