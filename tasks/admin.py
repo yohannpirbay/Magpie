@@ -51,6 +51,6 @@ class InviteAdmin(admin.ModelAdmin):
 
 @admin.register(Achievement)
 class AchievementAdmin(admin.ModelAdmin):
-    list_display = ['name', 'description', 'id']
+    list_display = ['name', 'description']
 
 
