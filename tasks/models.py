@@ -24,6 +24,11 @@ class Team(models.Model):
 
 class User(AbstractUser):
     """Model used for user authentication and team member-related information."""
+    
+    achievements = models.ManyToManyField('Achievement', blank=True)
+    sent_invites = models.ManyToManyField('Invite', related_name='sent_invites', blank=True)
+    received_invites = models.ManyToManyField('Invite', related_name='received_invites', blank=True)
+
     username = models.CharField(
         max_length=30,
         unique=True,
