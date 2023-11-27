@@ -24,7 +24,7 @@ class Team(models.Model):
 
 class User(AbstractUser):
     """Model used for user authentication and team member-related information."""
-    
+
     achievements = models.ManyToManyField('Achievement', blank=True)
     sent_invites = models.ManyToManyField('Invite', related_name='sent_invites', blank=True)
     received_invites = models.ManyToManyField('Invite', related_name='received_invites', blank=True)
@@ -61,6 +61,8 @@ class User(AbstractUser):
     def mini_gravatar(self):
         """Return a URL to a miniature version of the user's gravatar."""
         return self.gravatar(size=60)
+    def add_team(self, team):
+        self.teams.add(team)
 
         
         
