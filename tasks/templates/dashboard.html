@@ -13,6 +13,21 @@
 </head>
 
 <body>
+  <form method="get" action="{% url 'dashboard' %}">
+    <label for="sort_order">Sort by:</label>
+    <select id="sort_order" name="sort_order">
+      <option value="ascending">Ascending</option>
+      <option value="descending">Descending</option>
+    </select>
+
+    <label for="sort_order_team">Sort by Team:</label>
+    <select id="sort_order_team" name="sort_order_team">
+        <option value="ascending">Ascending</option>
+        <option value="descending">Descending</option>
+    </select>
+    
+    <button type="submit">Sort</button>
+  </form>
 
   <div class="container-fluid">
     <div class="row">

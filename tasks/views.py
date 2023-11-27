@@ -10,7 +10,7 @@ from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm
 from tasks.helpers import login_prohibited
-from .models import Team, Invite, User # Import your Team model
+from .models import Team, Invite, User, Task # Import your Team model
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from .forms import InvitationForm
@@ -41,7 +41,43 @@ def accept_or_decline_invite(request, invite_id, action):
 def dashboard(request):
     """Display the current user's dashboard."""
 
-    return render(request, 'dashboard.html')
+
+    current_user = request.user
+    #User username is required for sorting tasks by assignedUsername
+    current_userName = request.user.username
+    
+    #By default tasks and teams are in ascending order
+    sort_order = request.GET.get('sort_order', 'ascending')
+    sort_by_team = request.GET.get('sort_order_team', 'ascending')
+
+    # Get the user's invitations
+    invitations = Invite.objects.filter(recipient=current_user)
+    sent_invitations = Invite.objects.filter(sender=current_user, status='pending')  # Query sent invitations by the user
+
+    received_invitations = Invite.objects.filter(recipient=current_user, status='pending')
+
+    #Retrieve tasks only from the specific username and from the specific teams
+    tasks = Task.objects.filter(assignedUsername=current_userName, team__members=current_user)
+    if sort_order == 'ascending':
+        tasks = tasks.order_by('dueDate')
+    else:
+        tasks = tasks.order_by('-dueDate')
+
+    if sort_by_team == 'ascending':
+        tasks = tasks.order_by('team__name', 'dueDate')
+    else:
+        tasks = tasks.order_by('-team__name', '-dueDate')
+
+    context = {
+        'sent_invitations': sent_invitations,
+        'received_invitations': received_invitations,
+        'user' : current_user,
+        'tasks' : tasks,
+        # Other context variables
+    }
+
+    return render(request, 'dashboard.html', context)
+
 
 
 '''Managing the accept invite and decline invite  and adding it into dashboard.html'''
