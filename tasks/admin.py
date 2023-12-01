@@ -9,7 +9,7 @@ from .models import User, Achievement
 class UserAdmin(BaseUserAdmin):
     list_display = [
         'username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams', 'display_achievements',
-        'display_sent_invites', 'display_received_invites'
+        'display_sent_invites', 'display_received_invites' ,'id'
     ]
 
     def display_teams(self, obj):
@@ -35,7 +35,7 @@ admin.site.register(User, UserAdmin)
 class TeamAdmin(admin.ModelAdmin):
     """Configuration of the admin interface for teams."""
 
-    list_display = ['name', 'description', 'display_members']
+    list_display = ['name', 'description', 'display_members',]
 
     def display_members(self, obj):
         # Create a method to display members of each time as we can't directly display 'members'
