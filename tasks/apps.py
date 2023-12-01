@@ -1,6 +1,7 @@
 # tasks/apps.py
 from django.apps import AppConfig
 
+
 class TasksConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'tasks'
@@ -13,17 +14,24 @@ class TasksConfig(AppConfig):
         self.create_initial_achievements()
 
     def create_initial_achievements(self):
-        from .models import Achievement 
+        from .models import Achievement
 
         # Check if achievements already exist
-        if not Achievement.objects.filter(name="First Team Created").exists():
-            Achievement.objects.create(name="First Team Created", description="You created your first team!")
+        try:
+            if not Achievement.objects.filter(name="First Team Created").exists():
+                Achievement.objects.create(
+                    name="First Team Created", description="You created your first team!")
+        except IntegrityError as e:
+            logging.error(f"Error creating achievement: {e}")
 
         if not Achievement.objects.filter(name="First Invitation").exists():
-            Achievement.objects.create(name="First Invitation", description="You invited your first teammate!")
+            Achievement.objects.create(
+                name="First Invitation", description="You invited your first teammate!")
 
         if not Achievement.objects.filter(name="Fyoo").exists():
-            Achievement.objects.create(name="Fyoo", description="You invited your first teammate!")
+            Achievement.objects.create(
+                name="Fyoo", description="You invited your first teammate!")
 
         if not Achievement.objects.filter(name="Faaayoo").exists():
-            Achievement.objects.create(name="Faaayoo", description="You invited your first teammate!")
+            Achievement.objects.create(
+                name="Faaayoo", description="You invited your first teammate!")
