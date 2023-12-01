@@ -16,7 +16,7 @@ class Notification(models.Model):
 
 
 class Achievement(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     description = models.TextField()
 
 
@@ -24,17 +24,15 @@ class Achievement(models.Model):
 def create_initial_achievements(sender, **kwargs):
     if sender.name == 'tasks':
         # Check if achievements already exist
-        if not Achievement.objects.filter(name="First Team Created").exists():
-            Achievement.objects.create(
-                name="First Team Created", description="You created your first team!")
-
-        if not Achievement.objects.filter(name="First Invitation").exists():
-            Achievement.objects.create(
-                name="First Invitation", description="You invited your first teammate!")
-        if not Achievement.objects.filter(name="testing Invitation").exists():
-            Achievement.objects.create(
-                name="testing Invitation", description="testing invited your first teammate!")
-
+        achievements = [
+            {"name": "First Team Created", "description": "You created your first team!"},
+            {"name": "First Invitation", "description": "You invited your first teammate!"},
+            {"name": "testing Invitation", "description": "Testing invited your first teammate!"}
+        ]
+        for achievement_data in achievements:
+            achievement, created = Achievement.objects.get_or_create(**achievement_data)
+            if not created:
+                print(f"Achievement '{achievement.name}' already exists.")
 
 class Team(models.Model):
     name = models.CharField(max_length=50, blank=False)
@@ -49,9 +47,9 @@ class Team(models.Model):
         is_new = self.pk is None
         super().save(*args, **kwargs)
         if is_new:
-            self.creator.achievements.add(
-                Achievement.objects.get(name="First Team Created"))
-
+            achievement, created = Achievement.objects.get_or_create(name="First Team Created")
+            if created:
+                self.creator.achievements.add(achievement)
 
 class User(AbstractUser):
     """Model used for user authentication and team member-related information."""
