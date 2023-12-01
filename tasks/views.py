@@ -10,7 +10,7 @@ from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
 from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm
 from tasks.helpers import login_prohibited
-from .models import Team, Invite, User, Task # Import your Team model
+from .models import Team, Invite, User, Task, Achievement  # Import your Team model
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from .forms import InvitationForm
@@ -36,28 +36,30 @@ def accept_or_decline_invite(request, invite_id, action):
     return JsonResponse({'message': 'Invitation updated successfully'})
 
 
-
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
 
 
     current_user = request.user
-    #User username is required for sorting tasks by assignedUsername
+    # User username is required for sorting tasks by assignedUsername
     current_userName = request.user.username
-    
-    #By default tasks and teams are in ascending order
+
+    # By default tasks and teams are in ascending order
     sort_order = request.GET.get('sort_order', 'ascending')
     sort_by_team = request.GET.get('sort_order_team', 'ascending')
 
     # Get the user's invitations
     invitations = Invite.objects.filter(recipient=current_user)
-    sent_invitations = Invite.objects.filter(sender=current_user, status='pending')  # Query sent invitations by the user
+    sent_invitations = Invite.objects.filter(
+        sender=current_user, status='pending')  # Query sent invitations by the user
 
-    received_invitations = Invite.objects.filter(recipient=current_user, status='pending')
+    received_invitations = Invite.objects.filter(
+        recipient=current_user, status='pending')
 
-    #Retrieve tasks only from the specific username and from the specific teams
-    tasks = Task.objects.filter(assignedUsername=current_userName, team__members=current_user)
+    # Retrieve tasks only from the specific username and from the specific teams
+    tasks = Task.objects.filter(
+        assignedUsername=current_userName, team__members=current_user)
     if sort_order == 'ascending':
         tasks = tasks.order_by('dueDate')
     else:
@@ -71,13 +73,12 @@ def dashboard(request):
     context = {
         'sent_invitations': sent_invitations,
         'received_invitations': received_invitations,
-        'user' : current_user,
-        'tasks' : tasks,
+        'user': current_user,
+        'tasks': tasks,
         # Other context variables
     }
 
     return render(request, 'dashboard.html', context)
-
 
 
 '''Managing the accept invite and decline invite  and adding it into dashboard.html'''
@@ -98,6 +99,7 @@ def accept_invite(request, invite_id):
     # Redirect back to the dashboard
     return redirect('dashboard')
 
+
 @login_required
 def decline_invite(request, invite_id):
     invite = Invite.objects.get(id=invite_id)
@@ -106,6 +108,7 @@ def decline_invite(request, invite_id):
         invite.status = 'declined'
         invite.save()
     return redirect('dashboard')
+
 
 @login_required
 def send_invitation(request, user_id):
@@ -120,7 +123,8 @@ def send_invitation(request, user_id):
             status = 'pending'  # You can set the default status here
 
             # Create a new Invite instance
-            invite = Invite(sender=sender, recipient=user, team=team, status=status)
+            invite = Invite(sender=sender, recipient=user,
+                            team=team, status=status)
 
             # Save the invitation to the database
             invite.save()
@@ -295,14 +299,16 @@ class SignUpView(LoginProhibitedMixin, FormView):
 
 @login_required
 def team_members(request, team_id):
-     team = get_object_or_404(Team, pk=team_id)
+    team = get_object_or_404(Team, pk=team_id)
     # Ensure the user is a member of the team
-     if request.user.teams.filter(id=team_id).exists():
-         members = team.members.all()
-         return render(request, 'team_members.html', {'team': team, 'members': members})
-     else:
-         messages.error(request, "You are not authorized to view this team's members.")
-         return redirect('dashboard')
+    if request.user.teams.filter(id=team_id).exists():
+        members = team.members.all()
+        return render(request, 'team_members.html', {'team': team, 'members': members})
+    else:
+        messages.error(
+            request, "You are not authorized to view this team's members.")
+        return redirect('dashboard')
+
 
 @login_required
 def create_team_view(request):
@@ -332,31 +338,31 @@ def create_team_view(request):
         form = TeamForm()
     return render(request, 'create_team.html', {'form': form})
 
+
 @login_required
 def invites_view(request):
     """Display team invitations sent to user"""
-    
+
     current_user = request.user
-    
+
     # Get the user's invitations
     invitations = Invite.objects.filter(recipient=current_user)
-    sent_invitations = Invite.objects.filter(sender=current_user, status='pending')  # Query sent invitations by the user
+    sent_invitations = Invite.objects.filter(
+        sender=current_user, status='pending')  # Query sent invitations by the user
 
-    received_invitations = Invite.objects.filter(recipient=current_user, status='pending')
-
+    received_invitations = Invite.objects.filter(
+        recipient=current_user, status='pending')
 
     context = {
         'sent_invitations': sent_invitations,
         'received_invitations': received_invitations,
-        'user' : current_user,
+        'user': current_user,
         # Other context variables
     }
 
-    
     return render(request, 'invites.html', context)
+
 
 def My_team(request):
 
     return render(request, 'My_team.html')
-
-

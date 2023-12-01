@@ -4,16 +4,29 @@ from .models import User, Team, Invite
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, Achievement
 
 class UserAdmin(BaseUserAdmin):
     list_display = [
-        'username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams'
+        'username', 'first_name', 'last_name', 'email', 'is_active', 'display_teams', 'display_achievements',
+        'display_sent_invites', 'display_received_invites'
     ]
 
     def display_teams(self, obj):
         return ", ".join([team.name for team in obj.teams.all()])
     display_teams.short_description = 'Teams'
+
+    def display_achievements(self, obj):
+        return ", ".join([achievement.name for achievement in obj.achievements.all()])
+    display_achievements.short_description = 'Achievements'
+
+    def display_sent_invites(self, obj):
+        return ", ".join([invite.recipient.username for invite in obj.sent_invites.all()])
+    display_sent_invites.short_description = 'Sent Invites'
+
+    def display_received_invites(self, obj):
+        return ", ".join([invite.sender.username for invite in obj.received_invites.all()])
+    display_received_invites.short_description = 'Received Invites'
 
 admin.site.register(User, UserAdmin)
 
@@ -35,3 +48,7 @@ class TeamAdmin(admin.ModelAdmin):
 class InviteAdmin(admin.ModelAdmin):
     list_display = ('sender', 'recipient', 'team', 'status', )
 
+
+@admin.register(Achievement)
+class AchievementAdmin(admin.ModelAdmin):
+    list_display = ['name', 'description']

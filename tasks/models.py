@@ -2,11 +2,55 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from libgravatar import Gravatar
+from django.db.models.signals import post_migrate
+from django.dispatch import receiver
+
+# models.py
+
+
+class Notification(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    message = models.CharField(max_length=255)
+    achievement = models.ForeignKey('Achievement', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+
+class Achievement(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
+
+@receiver(post_migrate)
+def create_initial_achievements(sender, **kwargs):
+    if sender.name == 'tasks':
+        # Check if achievements already exist
+        if not Achievement.objects.filter(name="First Team Created").exists():
+            Achievement.objects.create(name="First Team Created", description="You created your first team!")
+
+        if not Achievement.objects.filter(name="First Invitation").exists():
+            Achievement.objects.create(name="First Invitation", description="You invited your first teammate!")
+        if not Achievement.objects.filter(name="testing Invitation").exists():
+            Achievement.objects.create(name="testing Invitation", description="testing invited your first teammate!")
+
+
+
 
 class Team(models.Model):
     name = models.CharField(max_length=50, blank=False)
-    description = models.TextField(max_length=500, blank=False)  # Specify the default value as an empty string
-    members = models.ManyToManyField('User')
+    creator = models.ForeignKey(
+        'User', on_delete=models.CASCADE, related_name='created_teams', default=1)
+    members = models.ManyToManyField('User', related_name='teams_joined')
+    # Specify the default value as an empty string
+    description = models.TextField(max_length=500, blank=False)
+    # Add a signal to trigger the achievement when a team is created
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new:
+            self.creator.achievements.add(
+                Achievement.objects.get(name="First Team Created"))
 
 
 class User(AbstractUser):
@@ -22,9 +66,14 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     email = models.EmailField(unique=True, blank=False)
-
     teams = models.ManyToManyField(
         Team, related_name='memberships', blank=True)
+    achievements = models.ManyToManyField('Achievement', blank=True)
+    # Add these fields
+    sent_invites = models.ManyToManyField(
+        'Invite', related_name='sent_invites', blank=True)
+    received_invites = models.ManyToManyField(
+        'Invite', related_name='received_invites', blank=True)
 
     class Meta:
         """Model options."""
@@ -44,23 +93,20 @@ class User(AbstractUser):
         """Return a URL to a miniature version of the user's gravatar."""
         return self.gravatar(size=60)
 
-        
-        
-    
+
 class Task(models.Model):
     title = models.CharField(max_length=15, unique=False, blank=False)
     description = models.CharField(max_length=120, blank=False)
-    assignedUsername = models.CharField(max_length=30, 
-                                        blank=False, 
+    assignedUsername = models.CharField(max_length=30,
+                                        blank=False,
                                         unique=False,
                                         validators=[RegexValidator(
                                             regex=r'^@\w{3,}$',
                                             message='Username must consist of @ followed by at least three alphanumericals'
                                         )])
     dueDate = models.DateField(blank=False, default="2032-12-25")
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True)
-
-    
+    team = models.ForeignKey(
+        Team, on_delete=models.CASCADE, null=True, blank=True)
 
     def get_teams(self):
         return self.teams.all()
@@ -70,13 +116,10 @@ class Task(models.Model):
 
 
 class Invite(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_invitations', default=None)
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_invitations', default=None)
+    sender = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='sent_invitations', default=None)
+    recipient = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='received_invitations', default=None)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None)
-    status = models.CharField(max_length=20, choices=(('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')), default=None)
-    
-
-
-
-
-
+    status = models.CharField(max_length=20, choices=(
+        ('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')), default=None)
