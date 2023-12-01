@@ -24,3 +24,6 @@ class TasksConfig(AppConfig):
 
         if not Achievement.objects.filter(name="Fyoo").exists():
             Achievement.objects.create(name="Fyoo", description="You invited your first teammate!")
+
+        if not Achievement.objects.filter(name="Faaayoo").exists():
+            Achievement.objects.create(name="Faaayoo", description="You invited your first teammate!")

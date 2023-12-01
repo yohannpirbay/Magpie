@@ -11,7 +11,6 @@ def team_created_achievement(sender, instance, created, **kwargs):
         achievement = Achievement.objects.get(name="First Team Created")
         instance.achievements.add(achievement)
 
-
         # Trigger the notification with achievement ID
         message = f"Congratulations! You earned the achievement: {achievement.name}"
         notification  = Notification.objects.create(user=instance, message=message, achievement_id=achievement.id)
