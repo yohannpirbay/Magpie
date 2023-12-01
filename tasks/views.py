@@ -330,19 +330,23 @@ def team_members(request, team_id):
 
 @login_required
 def create_team_view(request):
-    """Display the team creation screen and handles team creations."""
+    """Display the team creation screen and handle team creations."""
     if request.method == 'POST':
         form = TeamForm(request.POST)
         if form.is_valid():
             try:
                 with transaction.atomic():
-                    team = form.save()
+                    team = form.save(commit=False)
+                    team.creator = request.user  # Set the creator to the current user
+                    team.save()
+
                     # Add the current user to the team's members
                     team.members.add(request.user)
                     team.save()
 
                     request.user.add_team(team)
                     request.user.save()
+
                     # Add a success message
                     messages.success(request, 'Team created successfully!')
                     return redirect('dashboard')
@@ -355,7 +359,6 @@ def create_team_view(request):
     else:
         form = TeamForm()
     return render(request, 'create_team.html', {'form': form})
-
 
 @login_required
 def invites_view(request):

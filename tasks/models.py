@@ -37,7 +37,7 @@ def create_initial_achievements(sender, **kwargs):
 class Team(models.Model):
     name = models.CharField(max_length=50, blank=False)
     creator = models.ForeignKey(
-        'User', on_delete=models.CASCADE, related_name='created_teams', default=1)
+        'User', on_delete=models.CASCADE, related_name='created_teams')
     members = models.ManyToManyField('User', related_name='teams_joined')
     # Specify the default value as an empty string
     description = models.TextField(max_length=500, blank=False)
