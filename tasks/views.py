@@ -17,6 +17,7 @@ from .forms import InvitationForm
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db import transaction
+from django.utils.safestring import mark_safe
 
 
 def accept_or_decline_invite(request, invite_id, action):
@@ -39,7 +40,6 @@ def accept_or_decline_invite(request, invite_id, action):
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
-
 
     current_user = request.user
     # User username is required for sorting tasks by assignedUsername
@@ -122,18 +122,36 @@ def send_invitation(request, user_id):
             sender = request.user
             status = 'pending'  # You can set the default status here
 
-            # Create a new Invite instance
-            invite = Invite(sender=sender, recipient=user,
-                            team=team, status=status)
+            try:
+                # Create a new Invite instance
+                invite = Invite(sender=sender, recipient=user,
+                                team=team, status=status)
 
-            # Save the invitation to the database
-            invite.save()
+                # Save the invitation to the database
+                invite.save()
 
-            # Optionally, send notifications or emails to the recipient
+                # Add the invite to the sender's and recipient's sent and received invites
+                sender.sent_invites.add(invite)
+                user.received_invites.add(invite)
 
-            # Redirect to a success page or back to the dashboard
-            return redirect('dashboard')
+                # Optionally, send notifications or emails to the recipient
 
+                # Redirect to a success page or back to the dashboard
+                messages.success(request, 'Invitation sent successfully!')
+                return redirect('dashboard')
+
+            except Exception as e:
+                # Log the exception for debugging
+                messages.error(request, f"An error occurred: {e}")
+
+        else:
+            # Add an error message if the form is not valid
+            error_message = ''
+            for field, errors in form.errors.items():
+                for error in errors:
+                    error_message += mark_safe(f'{field.capitalize()}: {error}')
+
+            messages.error(request, error_message)
     else:
         form = InvitationForm(user=request.user)
 

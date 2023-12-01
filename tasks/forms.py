@@ -24,6 +24,8 @@ class InvitationForm(forms.Form):
         if user == self.user:
             raise ValidationError("You cannot send an invitation to yourself.")
         return user
+    
+    
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
 

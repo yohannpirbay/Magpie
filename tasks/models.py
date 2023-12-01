@@ -15,25 +15,25 @@ class Notification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-
-
 class Achievement(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
+
 
 @receiver(post_migrate)
 def create_initial_achievements(sender, **kwargs):
     if sender.name == 'tasks':
         # Check if achievements already exist
         if not Achievement.objects.filter(name="First Team Created").exists():
-            Achievement.objects.create(name="First Team Created", description="You created your first team!")
+            Achievement.objects.create(
+                name="First Team Created", description="You created your first team!")
 
         if not Achievement.objects.filter(name="First Invitation").exists():
-            Achievement.objects.create(name="First Invitation", description="You invited your first teammate!")
+            Achievement.objects.create(
+                name="First Invitation", description="You invited your first teammate!")
         if not Achievement.objects.filter(name="testing Invitation").exists():
-            Achievement.objects.create(name="testing Invitation", description="testing invited your first teammate!")
-
-
+            Achievement.objects.create(
+                name="testing Invitation", description="testing invited your first teammate!")
 
 
 class Team(models.Model):
@@ -92,6 +92,10 @@ class User(AbstractUser):
     def mini_gravatar(self):
         """Return a URL to a miniature version of the user's gravatar."""
         return self.gravatar(size=60)
+
+    def add_team(self, team):
+        """Add a team to the user's memberships."""
+        self.teams.add(team)
 
 
 class Task(models.Model):
