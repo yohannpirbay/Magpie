@@ -337,6 +337,8 @@ def create_team_view(request):
             try:
                 with transaction.atomic():
                     team = form.save(commit=False)
+                    team.creator = request.user  # Set the creator to the current user
+                    team.save()
 
                     # Add the current user to the team's members
                     team.members.add(request.user)
