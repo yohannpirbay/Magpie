@@ -204,11 +204,19 @@ class TaskForm(forms.ModelForm):
         return task
 
 
-
 class TeamForm(forms.ModelForm):
     """Form to create a team."""
+
     class Meta:
         """Form options."""
-
         model = Team
         fields = ['name', 'description', 'members']
+
+    def save(self, commit=True, user=None):
+        instance = super().save(commit=False)
+        if user:
+            instance.creator = user
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance

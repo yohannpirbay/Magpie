@@ -328,6 +328,10 @@ def team_members(request, team_id):
         return redirect('dashboard')
 
 
+
+
+
+
 @login_required
 def create_team_view(request):
     """Display the team creation screen and handle team creations."""
@@ -336,8 +340,9 @@ def create_team_view(request):
         if form.is_valid():
             try:
                 with transaction.atomic():
-                    team = form.save(commit=False)
-
+                    # Pass the user information to the form
+                    team = form.save(commit=False, user=request.user)
+                    team.save()  # Save the team first to get an ID
 
                     # Add the current user to the team's members
                     team.members.add(request.user)
@@ -345,6 +350,12 @@ def create_team_view(request):
 
                     request.user.add_team(team)
                     request.user.save()
+
+                    # Check if it's the user's first team and award the achievement
+                    if request.user.teams_joined.count() == 1:
+                        achievement, created = Achievement.objects.get_or_create(name="First Team Created")
+                        if created:
+                            request.user.achievements.add(achievement)
 
                     # Add a success message
                     messages.success(request, 'Team created successfully!')
@@ -358,6 +369,12 @@ def create_team_view(request):
     else:
         form = TeamForm()
     return render(request, 'create_team.html', {'form': form})
+
+
+
+
+
+
 
 @login_required
 def invites_view(request):

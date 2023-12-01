@@ -40,15 +40,10 @@ class Team(models.Model):
     members = models.ManyToManyField('User', related_name='teams_joined')
     description = models.TextField(max_length=500, blank=False)
 
-@receiver(post_save, sender=Team)
-def handle_team_creation(sender, instance, created, **kwargs):
-    if created:
-        user = instance.members.first()
-        if user:
-            # Assuming you have an Achievement model
-            achievement, created = Achievement.objects.get_or_create(name="First Team Created")
-            if created:
-                user.achievements.add(achievement)
+
+
+
+
 
 class User(AbstractUser):
     """Model used for user authentication and team member-related information."""
