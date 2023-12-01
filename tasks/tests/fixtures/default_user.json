@@ -8,8 +8,7 @@
       "username": "@johndoe",
       "email": "johndoe@example.org",
       "password": "pbkdf2_sha256$260000$4BNvFuAWoTT1XVU8D6hCay$KqDCG+bHl8TwYcvA60SGhOMluAheVOnF1PMz0wClilc=",
-      "is_active": true,
-      "id" : 1
+      "is_active": true
     }
   }
 ]

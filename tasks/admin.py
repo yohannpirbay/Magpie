@@ -35,7 +35,7 @@ admin.site.register(User, UserAdmin)
 class TeamAdmin(admin.ModelAdmin):
     """Configuration of the admin interface for teams."""
 
-    list_display = ['name', 'description', 'display_members', 'creator', 'creator_id']
+    list_display = ['name', 'description', 'display_members',]
 
     def display_members(self, obj):
         # Create a method to display members of each time as we can't directly display 'members'

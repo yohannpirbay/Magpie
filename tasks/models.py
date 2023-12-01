@@ -4,7 +4,7 @@ from django.db import models
 from libgravatar import Gravatar
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
-
+from django.db.models.signals import post_save
 # models.py
 
 
@@ -34,24 +34,21 @@ def create_initial_achievements(sender, **kwargs):
             if not created:
                 print(f"Achievement '{achievement.name}' already exists.")
 
+
 class Team(models.Model):
     name = models.CharField(max_length=50, blank=False)
-    creator = models.ForeignKey(
-        'User', on_delete=models.CASCADE, related_name='created_teams',
-        default=1  # Set the default creator ID to 1
-    )
     members = models.ManyToManyField('User', related_name='teams_joined')
-    # Specify the default value as an empty string
     description = models.TextField(max_length=500, blank=False)
-    # Add a signal to trigger the achievement when a team is created
 
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        if is_new:
+@receiver(post_save, sender=Team)
+def handle_team_creation(sender, instance, created, **kwargs):
+    if created:
+        user = instance.members.first()
+        if user:
+            # Assuming you have an Achievement model
             achievement, created = Achievement.objects.get_or_create(name="First Team Created")
             if created:
-                self.creator.achievements.add(achievement)
+                user.achievements.add(achievement)
 
 class User(AbstractUser):
     """Model used for user authentication and team member-related information."""

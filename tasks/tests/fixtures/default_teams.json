@@ -4,8 +4,7 @@
       "pk": 1,
       "fields": {
           "name": "BronzeBulls",
-          "description": "We are the bulls",
-          "creator": 1  
+          "description": "We are the bulls"
       }
   }
 ]
