@@ -3,6 +3,7 @@ from django import forms
 from django.test import TestCase
 from tasks.forms import TaskForm
 from tasks.models import User,Task,Team
+from django.utils import timezone
 
 class TaskFormTestCase(TestCase):
     """Unit tests of the task form."""
@@ -32,14 +33,37 @@ class TaskFormTestCase(TestCase):
 
     def test_invalid_task_form(self):
         form_data = self.form_input.copy()
+        form_data['description'] = ''
+        form = TaskForm(data=form_data)
+        self.assertFalse(form.is_valid())
+
+    def test_clean_assignedUsername(self):
+        form_data = self.form_input.copy()
         form_data['assignedUsername'] = "@thisUsernameDoesNotExist"
         form = TaskForm(data=form_data)
+        self.assertFalse(form.is_valid())
+
+    def test_empty_fields(self):
+        self.form_input = {'title': '', 'description': '', 'assignedUsername': '', 'dueDate': '', 'team': self.team}
+        form = TaskForm(data=self.form_input)
         self.assertFalse(form.is_valid())
 
     def test_clean_dueDate(self):
         self.form_input['dueDate'] = '2015-10-21'
         form = TaskForm(data=self.form_input)
         self.assertFalse(form.is_valid())
+
+    def test_invalid_due_date_format(self):
+        form_data = self.form_input.copy()
+        form_data['dueDate'] = '25-12-2032'
+        form = TaskForm(data=form_data)
+        self.assertFalse(form.is_valid())
+
+    def test_due_date_edge_case(self):
+        form_data = self.form_input.copy()
+        form_data['dueDate'] = timezone.now().date()
+        form = TaskForm(data=form_data)
+        self.assertTrue(form.is_valid())
 
     def test_form_has_necessary_fields(self):
         form = TaskForm()

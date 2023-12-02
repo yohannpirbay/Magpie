@@ -111,8 +111,13 @@ class TaskModelTestCase(TestCase):
         description='This task is not associated with any team',
         assignedUsername='@user',
         dueDate='2032-12-25',
-    )
+        )
         self._assert_task_is_valid()
+
+    def test_invalid_team_assignment(self):
+        #this id doesn't exist in the database
+        self.task.team_id = 999
+        self._assert_task_is_invalid()
 
     def test_cascade_deletion_of_tasks(self):
         self.team.delete()

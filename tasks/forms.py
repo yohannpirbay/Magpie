@@ -150,12 +150,14 @@ class TaskForm(forms.ModelForm):
         }
 
     def clean_assignedUsername(self):
+        #checks that a user with the assigned username exists in the database
         assigned_Username = self.cleaned_data.get("assignedUsername")
         if not User.objects.filter(username = assigned_Username).exists():
             raise forms.ValidationError("An account using this email does not exist")
         return assigned_Username
     
     def clean_dueDate(self):
+        #checks due date is not set to be before the current day
         due_date = self.cleaned_data.get('dueDate')
         if due_date < timezone.now().date():
             raise forms.ValidationError('Due date must be in the future.')
