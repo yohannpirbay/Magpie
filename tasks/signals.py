@@ -5,14 +5,20 @@ from .models import Achievement, Notification
 
 @receiver(post_save, sender=get_user_model())
 def team_created_achievement(sender, instance, created, **kwargs):
-    if created and instance.teams.count() == 1:
-        achievement, _ = Achievement.objects.get_or_create(name="First Team Created")
-        instance.achievements.add(achievement)
 
-        message = f"Congratulations! You earned the achievement: {achievement.name}"
-        notification = Notification.objects.create(user=instance, message=message, achievement_id=achievement.id)
+    if created and instance.teams.exists():
+        print("first if")
+        # Check if the user already has the "First Team Created" achievement
+        if not instance.achievements.filter(name="First Team Created").exists():
+            print("user dont have the achievemnt ")
+            achievement, _ = Achievement.objects.get_or_create(name="First Team Created")
+            instance.achievements.add(achievement)
 
-        print(f"Notification created - ID: {notification.id}, User: {notification.user}, Message: {notification.message}, Achievement: {notification.achievement}, Created At: {notification.created_at}")
+            message = f"Congratulations! You earned the achievement: {achievement.name}"
+            notification = Notification.objects.create(user=instance, message=message, achievement_id=achievement.id)
+
+            print(f"Notification created - ID: {notification.id}, User: {notification.user}, Message: {notification.message}, Achievement: {notification.achievement}, Created At: {notification.created_at}")
+
 
 # @receiver(post_save, sender=Invite)
 # def invitation_sent_achievement(sender, instance, created, **kwargs):
