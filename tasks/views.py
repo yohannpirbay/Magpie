@@ -18,6 +18,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.utils.safestring import mark_safe
+from .signals import team_created_achievement  # Import your signal
+
 
 
 def accept_or_decline_invite(request, invite_id, action):
@@ -331,7 +333,6 @@ def team_members(request, team_id):
 
 
 
-
 @login_required
 def create_team_view(request):
     """Display the team creation screen and handle team creations."""
@@ -351,6 +352,9 @@ def create_team_view(request):
                     request.user.add_team(team)
                     request.user.save()
 
+                    # Call the team_created_achievement signal manually
+                    team_created_achievement(sender=request.user.__class__, instance=request.user, created=True)
+
                     # Check if it's the user's first team and award the achievement
                     if request.user.teams_joined.count() == 1:
                         achievement, created = Achievement.objects.get_or_create(name="First Team Created")
@@ -369,8 +373,6 @@ def create_team_view(request):
     else:
         form = TeamForm()
     return render(request, 'create_team.html', {'form': form})
-
-
 
 
 
