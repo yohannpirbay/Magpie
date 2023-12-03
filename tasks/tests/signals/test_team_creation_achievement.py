@@ -32,10 +32,6 @@ class TeamCreationAchievementTest(TestCase):
 
         form = TeamForm(form_data)
 
-        # Print the form errors if it's not valid
-        if not form.is_valid():
-            print("Form is NOT valid")
-            print("Form errors:", form.errors)
 
 
         # Simulate the view by making a POST request
@@ -51,12 +47,6 @@ class TeamCreationAchievementTest(TestCase):
         # Fetch the user after the team is created
         user = get_user_model().objects.get(username='testuser')
 
-        # Debug: Print current achievements count
-        print(f"Current achievements count: {user.achievements.count()}")
-
-        # Print the names of all teams associated with the user
-        print("User's teams after creation:", [team.name for team in user.teams.all()])
-
         # Check if the achievement is added
         self.assertEqual(user.achievements.count(), 1)
 
@@ -66,19 +56,17 @@ class TeamCreationAchievementTest(TestCase):
             notification.message, 'Congratulations! You earned the achievement: First Team Created'
         )
 
-        # Print a message if the team is created
-        print("Team created successfully:", user.teams.first().name)
 
         # Additional debugging for form validation and exceptions
         form = TeamForm(form_data)
 
         if form.is_valid():
-            print("Form is valid")
+
             try:
                 # Your team creation code here
                 pass
             except Exception as e:
                 print(f"Exception during team creation: {e}")
         else:
-            print("Form is NOT valid")
+           
             print("Form errors:", form.errors)
