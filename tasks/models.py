@@ -116,6 +116,6 @@ class Invite(models.Model):
         User, on_delete=models.CASCADE, related_name='sent_invitations', default=None)
     recipient = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='received_invitations', default=None)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='tasks')
     status = models.CharField(max_length=20, choices=(
         ('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')), default=None)
