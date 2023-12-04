@@ -1,11 +1,10 @@
 [
-    {
+  {
       "model": "tasks.Team",
       "pk": 1,
       "fields": {
-        "name": "BronzeBulls",
-        "description": "We are the bulls"
-
+          "name": "BronzeBulls",
+          "description": "We are the bulls"
       }
-    }
+  }
 ]

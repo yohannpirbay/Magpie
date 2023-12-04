@@ -4,26 +4,55 @@ from django.contrib.auth import authenticate, get_user_model
 from django.core.validators import RegexValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError 
-from .models import User, Team, Task
+from .models import User, Team, Task, Invite
 
 
 
 
 User = get_user_model()
 
+# class InvitationForm(forms.Form):
+#     user = forms.ModelChoiceField(queryset=User.objects.all(), label='Select User')
+#     team = forms.ModelChoiceField(queryset=Team.objects.all(), label='Select Team')
+
+#     def __init__(self, *args, **kwargs):
+#         self.user = kwargs.pop('user', None)
+#         super(InvitationForm, self).__init__(*args, **kwargs)
+
+#     def clean_user(self):
+#         user = self.cleaned_data.get('user')
+#         if user == self.user:
+#             raise ValidationError("You cannot send an invitation to yourself.")
+#         return user
+    
+    
+
+
 class InvitationForm(forms.Form):
     user = forms.ModelChoiceField(queryset=User.objects.all(), label='Select User')
     team = forms.ModelChoiceField(queryset=Team.objects.all(), label='Select Team')
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+        self.sender = kwargs.pop('user', None)
         super(InvitationForm, self).__init__(*args, **kwargs)
 
     def clean_user(self):
         user = self.cleaned_data.get('user')
-        if user == self.user:
+
+        # Check if an invitation has already been sent to the selected user
+        if Invite.objects.filter(sender=self.sender, recipient=user).exists():
+            raise ValidationError("An invitation has already been sent to this user.")
+
+        # Check if the selected user is the sender
+        if user == self.sender:
             raise ValidationError("You cannot send an invitation to yourself.")
+
         return user
+
+
+
+
+    
 class LogInForm(forms.Form):
     """Form enabling registered users to log in."""
 
@@ -175,11 +204,19 @@ class TaskForm(forms.ModelForm):
         return task
 
 
-
 class TeamForm(forms.ModelForm):
     """Form to create a team."""
+
     class Meta:
         """Form options."""
-
         model = Team
         fields = ['name', 'description', 'members']
+
+    def save(self, commit=True, user=None):
+        instance = super().save(commit=False)
+        if user:
+            instance.creator = user
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
