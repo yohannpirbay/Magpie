@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm, TaskForm
 from tasks.helpers import login_prohibited
 from .models import Team, Invite, User, Task, Achievement  # Import your Team model
 from django.http import HttpResponseRedirect
@@ -405,3 +405,30 @@ def invites_view(request):
 def My_team(request):
 
     return render(request, 'My_team.html')
+
+@login_required
+def create_task_view(request):
+    """Display the task creation screen and handles task creations."""
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    task = form.save(commit=False)
+                    task.assigned_username = request.user.username
+                    task.save()
+
+                    team = form.cleaned_data.get('team')
+                    if team:
+                        team.tasks.add(task)
+                        team.save()
+
+                    messages.success(request, 'Task created successfully!')
+                    return redirect('dashboard')
+            except Exception as e:
+                messages.error(request, f"An error occurred: {e}")
+        else:
+            messages.error(request, 'There was an error creating the task.')
+    else:
+        form = TaskForm()
+    return render(request, 'create_task.html', {'form': form})
