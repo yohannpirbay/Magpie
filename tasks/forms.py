@@ -207,6 +207,11 @@ class TaskForm(forms.ModelForm):
 class TeamForm(forms.ModelForm):
     """Form to create a team."""
 
+    members = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        widget=forms.CheckboxSelectMultiple(),  # Use CheckboxSelectMultiple for multiple selections
+    )
+
     class Meta:
         """Form options."""
         model = Team
