@@ -345,10 +345,12 @@ def create_team_view(request):
                     team = form.save(commit=False, user=request.user)
                     team.save()  # Save the team first to get an ID
 
-                    # Add the current user to the team's members
-                    team.members.add(request.user)
-                    team.save()
+                    # Add the selected users to the team's members
+                    for selected_user in form.cleaned_data['members']:
+                        team.members.add(selected_user)
 
+                    team.save()
+                    
                     request.user.add_team(team)
                     request.user.save()
 
