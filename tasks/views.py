@@ -60,8 +60,8 @@ def dashboard(request):
         recipient=current_user, status='pending')
 
     # Retrieve tasks only from the specific username and from the specific teams
-    tasks = Task.objects.filter(
-        assignedUsername=current_userName, team__members=current_user)
+    tasks = Task.objects.filter(assigned_users=current_user)
+
     if sort_order == 'ascending':
         tasks = tasks.order_by('dueDate')
     else:
@@ -410,27 +410,34 @@ def My_team(request):
 
 @login_required
 def create_task_view(request):
-    """Display the task creation screen and handles task creations."""
     if request.method == 'POST':
-        form = TaskForm(request.POST)
+        form = TaskForm(request.POST, user=request.user)
         if form.is_valid():
             try:
-                with transaction.atomic():
-                    task = form.save(commit=False)
-                    task.assigned_username = request.user.username
-                    task.save()
 
-                    team = form.cleaned_data.get('team')
-                    if team:
-                        team.tasks.add(task)
-                        team.save()
-
-                    messages.success(request, 'Task created successfully!')
-                    return redirect('dashboard')
+                tasks = form.save(commit=False)
+                tasks.creator = request.user
+                tasks.save()
+                form.save()
+                messages.success(request, 'Task created successfully!')
+                return redirect('dashboard')
             except Exception as e:
-                messages.error(request, f"An error occurred: {e}")
+               messages.error(request, f"An error occurred: {e}")
+
         else:
-            messages.error(request, 'There was an error creating the task.')
+            error_message = ''
+            for field, errors in form.errors.items():
+                for error in errors:
+                    error_message += mark_safe(f'{field.capitalize()}: {error}')
+
+            messages.error(request, error_message)
+
     else:
-        form = TaskForm()
+            form = TaskForm(user=request.user)
+
+    context = {
+        'form': form,
+        'user_teams': request.user.teams.all(),
+    }
+
     return render(request, 'create_task.html', {'form': form})
