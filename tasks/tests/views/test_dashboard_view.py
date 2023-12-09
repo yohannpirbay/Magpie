@@ -12,19 +12,18 @@ class DashboardViewTestCase(TestCase):
     
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
-        self.team = Team.objects.get(name = 'BronzeBulls')
-        self.task = Task.objects.get(assignedUsername='@johndoe')
+        self.team = Team.objects.get(name='BronzeBulls')
+        self.task = Task.objects.get(assigned_user=self.user)
         self.task.team = self.team
-        self.task2 = Task.objects.get(pk = 2)
+        self.task2 = Task.objects.get(pk=2)
         self.task2.team = self.team
-        
 
     def test_dashboard_sorts_due_date_ascending(self):
         self.client.login(username=self.user.username, password="Password123")
         url = reverse('dashboard') + '?sort_order_due_date=ascending'
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        due_dates = [datetime.strptime(str(task.dueDate), '%Y-%m-%d') for task in response.context['tasks']]
+        due_dates = [datetime.strptime(str(task.due_date), '%Y-%m-%d') for task in response.context['tasks']]
         self.assertListEqual(due_dates, sorted(due_dates))
 
     def test_dashboard_sorts_due_date_descending(self):
@@ -32,6 +31,5 @@ class DashboardViewTestCase(TestCase):
         url = reverse('dashboard') + '?sort_order_due_date=descending'
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        due_dates = [datetime.strptime(str(task.dueDate), '%Y-%m-%d') for task in response.context['tasks']]
-        self.assertListEqual(due_dates, sorted(due_dates, reverse= True))
-
+        due_dates = [datetime.strptime(str(task.due_date), '%Y-%m-%d') for task in response.context['tasks']]
+        self.assertListEqual(due_dates, sorted(due_dates, reverse=True))
