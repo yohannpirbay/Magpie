@@ -19,7 +19,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.utils.safestring import mark_safe
 from .signals import team_created_achievement  # Import your signal
-
+from .models import Task
 
 
 def accept_or_decline_invite(request, invite_id, action):
@@ -59,10 +59,13 @@ def dashboard(request):
     received_invitations = Invite.objects.filter(
         recipient=current_user, status='pending')
 
+    user_tasks = Task.objects.filter(assigned_user=current_user)
+
     context = {
         'sent_invitations': sent_invitations,
         'received_invitations': received_invitations,
         'user': current_user,
+        'user_tasks': user_tasks,
         
         # Other context variables
     }
@@ -398,12 +401,25 @@ def My_team(request):
 
 
 
+@login_required
 def create_task(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
-            task = form.save()
-            return redirect('task_detail', pk=task.pk)
+            try:
+                with transaction.atomic():
+                    task = form.save(commit=False)
+                    task.assigned_user = request.user
+                    task.save()
+
+                    # Handle other actions if needed
+
+                    messages.success(request, 'Task created successfully!')
+                    return redirect('dashboard')  # Redirect to the 'dashboard' view
+            except Exception as e:
+                messages.error(request, f"An error occurred: {e}")
+        else:
+            messages.error(request, 'There was an error creating the task.')
     else:
         form = TaskForm()
     return render(request, 'create_task.html', {'form': form})

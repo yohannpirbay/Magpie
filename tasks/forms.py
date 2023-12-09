@@ -5,7 +5,7 @@ from django.core.validators import RegexValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError 
 from .models import User, Team, Invite, Task
-
+from django.forms.widgets import DateInput
 
 
 
@@ -183,10 +183,24 @@ class TeamForm(forms.ModelForm):
             instance.save()
             self.save_m2m()
         return instance
+
+
     
-
-
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['title', 'description', 'assigned_user', 'due_date', 'team']
+
+        team = forms.ModelChoiceField(
+            queryset=Team.objects.all(),
+        )
+
+        widgets = {
+            'due_date': DateInput(attrs={'type': 'date'}),
+        }
+
+    def clean_due_date(self):
+        due_date = self.cleaned_data.get('due_date')
+        if due_date < timezone.now().date():
+            raise forms.ValidationError('Due date must be in the future.')
+        return due_date
