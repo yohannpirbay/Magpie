@@ -98,7 +98,7 @@ class Task(models.Model):
     assigned_users = models.ManyToManyField(User, blank=True, related_name='assigned_tasks')
 
     dueDate = models.DateField(blank=False, default="2032-12-25")
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='tasks')
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='tasks', default=None)
 
     def get_teams(self):
         return self.teams.all()
