@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.core.validators import RegexValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError 
-from .models import User, Team, Invite
+from .models import User, Team, Invite, Task
 
 
 
@@ -183,3 +183,10 @@ class TeamForm(forms.ModelForm):
             instance.save()
             self.save_m2m()
         return instance
+    
+
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'assigned_user', 'due_date', 'team']

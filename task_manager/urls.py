@@ -35,4 +35,5 @@ urlpatterns = [
     path('dashboard/invites/', views.invites_view, name='invites'),
     path('dashboard/My_team/', views.My_team, name='My_team'),
     path('team/<int:team_id>/members/', views.team_members, name='team_members'),
+    path('create-task/', views.create_task, name='create_task'),
 ]

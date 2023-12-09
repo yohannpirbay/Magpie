@@ -4,7 +4,7 @@ from .models import User, Team, Invite
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Achievement
+from .models import User, Achievement,Task
 
 class UserAdmin(BaseUserAdmin):
     list_display = [
@@ -52,3 +52,10 @@ class InviteAdmin(admin.ModelAdmin):
 @admin.register(Achievement)
 class AchievementAdmin(admin.ModelAdmin):
     list_display = ['name', 'description']
+
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ['title', 'description','assigned_user', 'due_date', 'team']
+
+
+

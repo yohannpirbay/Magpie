@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm, TaskForm
 from tasks.helpers import login_prohibited
 from .models import Team, Invite, User,  Achievement  # Import your Team model
 from django.http import HttpResponseRedirect
@@ -394,3 +394,16 @@ def invites_view(request):
 def My_team(request):
 
     return render(request, 'My_team.html')
+
+
+
+
+def create_task(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save()
+            return redirect('task_detail', pk=task.pk)
+    else:
+        form = TaskForm()
+    return render(request, 'create_task.html', {'form': form})
