@@ -38,7 +38,7 @@ def create_initial_achievements(sender, **kwargs):
 class Team(models.Model):
     name = models.CharField(max_length=50, blank=False)
     members = models.ManyToManyField('User', related_name='teams_joined')
-    description = models.TextField(max_length=500, blank=False)
+    description = models.CharField(max_length=500, blank=False)
 
 
 
@@ -91,18 +91,13 @@ class User(AbstractUser):
 
 
 class Task(models.Model):
-    title = models.CharField(max_length=15, unique=False, blank=False)
+    title = models.CharField(max_length=15, blank=False)
     description = models.CharField(max_length=120, blank=False)
-    assignedUsername = models.CharField(max_length=30,
-                                        blank=False,
-                                        unique=False,
-                                        validators=[RegexValidator(
-                                            regex=r'^@\w{3,}$',
-                                            message='Username must consist of @ followed by at least three alphanumericals'
-                                        )])
+    # Change from ForeignKey to ManyToManyField
+    assigned_users = models.ManyToManyField(User, blank=True, related_name='assigned_tasks')
+
     dueDate = models.DateField(blank=False, default="2032-12-25")
-    team = models.ForeignKey(
-        Team, on_delete=models.CASCADE, null=True, blank=True)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='tasks')
 
     def get_teams(self):
         return self.teams.all()

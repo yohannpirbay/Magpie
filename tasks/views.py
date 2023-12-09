@@ -8,7 +8,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 from django.urls import reverse
-from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm
+from tasks.forms import LogInForm, PasswordForm, UserForm, SignUpForm, TeamForm, TaskForm
 from tasks.helpers import login_prohibited
 from .models import Team, Invite, User, Task, Achievement  # Import your Team model
 from django.http import HttpResponseRedirect
@@ -60,8 +60,8 @@ def dashboard(request):
         recipient=current_user, status='pending')
 
     # Retrieve tasks only from the specific username and from the specific teams
-    tasks = Task.objects.filter(
-        assignedUsername=current_userName, team__members=current_user)
+    tasks = Task.objects.filter(assigned_users=current_user)
+
     if sort_order == 'ascending':
         tasks = tasks.order_by('dueDate')
     else:
@@ -349,10 +349,12 @@ def create_team_view(request):
                     team = form.save(commit=False, user=request.user)
                     team.save()  # Save the team first to get an ID
 
-                    # Add the current user to the team's members
-                    team.members.add(request.user)
-                    team.save()
+                    # Add the selected users to the team's members
+                    for selected_user in form.cleaned_data['members']:
+                        team.members.add(selected_user)
 
+                    team.save()
+                    
                     request.user.add_team(team)
                     request.user.save()
 
@@ -409,3 +411,37 @@ def invites_view(request):
 def My_team(request):
 
     return render(request, 'My_team.html')
+
+@login_required
+def create_task_view(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST, user=request.user)
+        if form.is_valid():
+            try:
+
+                tasks = form.save(commit=False)
+                tasks.creator = request.user
+                tasks.save()
+                form.save()
+                messages.success(request, 'Task created successfully!')
+                return redirect('dashboard')
+            except Exception as e:
+               messages.error(request, f"An error occurred: {e}")
+
+        else:
+            error_message = ''
+            for field, errors in form.errors.items():
+                for error in errors:
+                    error_message += mark_safe(f'{field.capitalize()}: {error}')
+
+            messages.error(request, error_message)
+
+    else:
+            form = TaskForm(user=request.user)
+
+    context = {
+        'form': form,
+        'user_teams': request.user.teams.all(),
+    }
+
+    return render(request, 'create_task.html', {'form': form})

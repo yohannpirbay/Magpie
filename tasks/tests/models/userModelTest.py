@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import User, Team
+from tasks.models import User, Team
 
 ''' Unit test to check if users are assigned to teams correctly '''
 class UserModelTestCase(TestCase):

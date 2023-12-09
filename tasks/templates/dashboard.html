@@ -13,21 +13,6 @@
 </head>
 
 <body>
-  <form method="get" action="{% url 'dashboard' %}">
-    <label for="sort_order">Sort by:</label>
-    <select id="sort_order" name="sort_order">
-      <option value="ascending">Ascending</option>
-      <option value="descending">Descending</option>
-    </select>
-
-    <label for="sort_order_team">Sort by Team:</label>
-    <select id="sort_order_team" name="sort_order_team">
-        <option value="ascending">Ascending</option>
-        <option value="descending">Descending</option>
-    </select>
-    
-    <button type="submit">Sort</button>
-  </form>
 
   <div class="container-fluid">
     <div class="row">
@@ -69,7 +54,7 @@
         <p>
           <div class="btn-group-lg">
             <a href='{% url 'create_team' %}' class="btn btn-lg btn-primary">Create Team</a>
-            <a href='#' class="btn btn-lg btn-primary">Create Task</a>
+            <a href='{% url 'create_task' %}' class="btn btn-lg btn-primary">Create Task</a>
             <a href="{% url 'send_invitation' user_id=user.id %}" class="btn btn-lg btn-primary">
               Send Invites
             </a>
@@ -85,54 +70,83 @@
       
       <div class="accordion" id="accordionOfTasks">
         
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-              Task 1
-            </button>
-          </h2>
-          <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionOfTasks">
-            <div class="accordion-body">
-              <strong>This is the first task's summary.</strong> Information about task can go here.
+        <form method="get" action="{% url 'dashboard' %}">
+          <div class="row">
+            <div class="col">
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="sort_order_team_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  Sort by Team
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="sort_order_team_dropdown">
+                  {% for task in user_tasks %}
+                    <li><a class="dropdown-item" href="#" data-value="{{ task.team }}">{{ task.team }}</a></li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            <div class="col">
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="sort_order_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  Sort by
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="sort_order_dropdown">
+                  <li><a class="dropdown-item" href="#" data-value="ascending">Ascending</a></li>
+                  <li><a class="dropdown-item" href="#" data-value="descending">Descending</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col">
+              <button type="submit" class="btn btn-primary">Sort</button>
             </div>
           </div>
-        </div>
+        </form>
 
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-              Task 2
-            </button>
-          </h2>
-          <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionOfTasks">
-            <div class="accordion-body">
-              <strong>This is the second task's summary..</strong> Information about task can go here.
-            </div>
-          </div>
+        <div class="row mt-4">
+        {% if tasks %}
+          <ul>
+            {% for task in tasks %}
+              <li>
+                <strong>Title:</strong> {{ task.title }}<br>
+                <strong>Description:</strong> {{ task.description }}<br>
+                <strong>Due Date:</strong> {{ task.dueDate }}<br>
+                <strong>Team:</strong> {{ task.team }}<br>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No tasks assigned.</p>
+        {% endif %}
         </div>
-      
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-              Task 3
-            </button>
-          </h2>
-          <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionOfTasks">
-            <div class="accordion-body">
-              <strong>This is the third task's summary.</strong> Information about task can go here.
-            </div>
+    
+    <!--commented out until the above code functions-->
+    {% comment %} {% if tasks %}
+    <div class="accordion" id="taskAccordion">
+      {% for task in tasks %}
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading{{ task.id }}">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ task.id }}" aria-expanded="true" aria-controls="collapse{{ task.id }}">
+            {{ task.title }}
+          </button>
+        </h2>
+        <div id="collapse{{ task.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ task.id }}" data-bs-parent="#taskAccordion">
+          <div class="accordion-body">
+            <strong>Title:</strong> {{ task.title }}<br>
+            <strong>Description:</strong> {{ task.description }}<br>
+            <strong>Due Date:</strong> {{ task.dueDate }}<br>
+            <strong>Team:</strong> {{ task.team }}<br>
           </div>
         </div>
       </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>No tasks assigned.</p>
+    {% endif %} {% endcomment %}
 
-      </div>
-    </div>
-  
-  </p>
-      <!-- end tasks section -->
-      
-    </div>
+    <!-- end tasks section -->
+    
   </div>
+</div>
 
 </body>
 </html>
