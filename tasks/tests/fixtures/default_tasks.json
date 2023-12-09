@@ -9,6 +9,16 @@
       "due_date": "2032-12-25",
       "team": 1
     }
+  },
+  {
+    "model": "tasks.task",
+    "pk": 2,
+    "fields": {
+      "title": "Task2",
+      "description": "Another task description",
+      "assigned_user": 1,
+      "due_date": "2033-01-10",
+      "team": 1
+    }
   }
-
 ]

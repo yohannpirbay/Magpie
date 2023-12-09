@@ -84,7 +84,6 @@ def accept_invite(request, invite_id):
         invite.status = 'accepted'
         invite.save()
         invite.team.members.add(request.user)
-        print("I AM INSIDE ACCEPT INVITE VIEW")
         # Add the team to the user's teams
         request.user.teams.add(invite.team)
 
