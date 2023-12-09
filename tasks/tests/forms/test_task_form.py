@@ -55,13 +55,19 @@ class TaskFormTestCase(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_form_must_save_correctly(self):
+        # Set the 'assignedUsername' to a valid username from the existing user
+        self.form_input['assignedUsername'] = self.user.username
+        
         form = TaskForm(data=self.form_input)
         before_count = Task.objects.count()
+        
         if form.is_valid():
             form.save()
+        
         after_count = Task.objects.count()
-        self.assertEqual(after_count, before_count+1)
-        task = Task.objects.get(assignedUsername='@johndoe')
+        self.assertEqual(after_count, before_count + 1)
+        
+        task = Task.objects.get(assignedUsername=self.user.username)  # Use the correct field for lookup
         self.assertEqual(task.title, 'Task1')
         self.assertEqual(task.description, 'Build the system')
         self.assertEqual(str(task.dueDate), '2032-12-25')
