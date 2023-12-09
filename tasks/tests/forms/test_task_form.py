@@ -20,6 +20,7 @@ class TaskFormTestCase(TestCase):
             'team': self.team.id  # Pass the team ID
         }
 
+
     def test_valid_task_form(self):
         form = TaskForm(data=self.form_input)
         self.assertTrue(form.is_valid())
