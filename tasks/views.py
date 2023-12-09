@@ -71,14 +71,18 @@ def dashboard(request):
         tasks = tasks.order_by('team__name', 'dueDate')
     else:
         tasks = tasks.order_by('-team__name', '-dueDate')
+    # Retrieve the user's achievements
+    user_achievements = current_user.achievements.all()
 
     context = {
         'sent_invitations': sent_invitations,
         'received_invitations': received_invitations,
         'user': current_user,
         'tasks': tasks,
+        'achievements': user_achievements,  # Add this line to include achievements in the context
         # Other context variables
     }
+    
 
     return render(request, 'dashboard.html', context)
 
