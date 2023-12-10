@@ -65,7 +65,8 @@ def dashboard(request):
 
     # Retrieve tasks assigned to the current user
     user_tasks = Task.objects.filter(assigned_user=current_user)
-
+    print("USER TASKS: ! ")
+    print(user_tasks)
 
     # Retrieve the user's achievements
     user_achievements = current_user.achievements.all()
@@ -426,48 +427,6 @@ def My_team(request):
     return render(request, 'My_team.html')
 
 
-@login_required
-def create_task(request):
-    # Check if the request method is POST (form submission)
-    if request.method == 'POST':
-        # Create a TaskForm instance with the data from the request
-        form = TaskForm(request.POST)
-        # Check if the form is valid
-        if form.is_valid():
-            try:
-                # Use a transaction to save the task
-                with transaction.atomic():
-                    # Save the task without committing to the database
-                    task = form.save(commit=False)
-                    # Assign the task to the current user
-                    task.assigned_user = request.user
-                    # Save the task to the database
-                    task.save()
-
-                    # Handle other actions if needed
-
-                    # Display a success message
-                    messages.success(request, 'Task created successfully!')
-                    # Redirect to the 'dashboard' view
-                    return redirect('dashboard')
-            except Exception as e:
-                # Display an error message if an exception occurs during task creation
-                messages.error(request, f"An error occurred: {e}")
-        else:
-            # Display an error message if the form is not valid
-            messages.error(request, 'There was an error creating the task.')
-    else:
-        # If the request method is not POST, create an empty TaskForm instance
-        form = TaskForm()
-
-        # Set the initial value of the 'selected-team' hidden field
-        if form.instance and hasattr(form.instance, 'team') and form.instance.team:
-            form.fields['team'].initial = str(form.instance.team.id)
-        else:
-            form.fields['team'].initial = ''
-
-    # Render the 'create_task.html' template with the form
-    return render(request, 'create_task.html', {'form': form})
 
 
 
@@ -488,3 +447,47 @@ def get_users_for_team(request, team_id):
     except Team.DoesNotExist:
         # Return an empty JSON response if the team does not exist
         return JsonResponse([], safe=False, status=404)
+    
+    
+    
+from django.http import Http404
+
+@login_required
+def create_task(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        print('Form data before validation:', form.data)
+        if form.is_valid():
+            try:
+                print('here')
+                assigned_user = form.cleaned_data['assigned_user']
+
+                print("here2")
+
+                with transaction.atomic():
+                    print("here3")
+                    task = form.save(commit=False)
+                    print("here4")
+                    task.assigned_user = assigned_user
+                    print("here5")
+                    task.save()
+                    print("here6")
+
+                    messages.success(request, 'Task created successfully!')
+                    return redirect('dashboard')
+            except (User.DoesNotExist, ValueError, Exception) as e:
+                messages.error(request, f"An error occurred: {e}")
+                print('Error during task creation:', e)
+                print('Form errors:', form.errors)
+        else:
+            print('Form errors:', form.errors)
+            messages.error(request, 'There was an error creating the task.')
+    else:
+        form = TaskForm()
+
+        if form.instance and hasattr(form.instance, 'team') and form.instance.team:
+            form.fields['team'].initial = str(form.instance.team.id)
+        else:
+            form.fields['team'].initial = ''
+
+    return render(request, 'create_task.html', {'form': form})

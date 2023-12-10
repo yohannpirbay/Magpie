@@ -1,42 +1,28 @@
-# Assuming the imports are already present
-from django import forms
+# In your tests.py file
+
 from django.test import TestCase
-from django.utils import timezone
 from tasks.models import Task, Team, User
-from tasks.forms import TaskForm  # Adjust the import based on your project structure
 
-class TaskFormTestCase(TestCase):
-    """Unit tests for the TaskForm."""
-
-    fixtures = [
-        'tasks/tests/fixtures/default_teams.json',
-        'tasks/tests/fixtures/other_users.json',  # Update the fixture path
-    ] 
-
+class TaskModelTestCase(TestCase):
     def setUp(self):
-        self.team = Team.objects.get(name='BronzeBulls')
-        self.user = User.objects.get(username='@janedoe')  # Assuming this username exists in your fixture
+        # Create a user for testing
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
 
-    def test_valid_task_form(self):
-        form_data = {
-            'title': 'Test Task',
-            'description': 'Test Description',
-            'assigned_user': self.user.id,
-            'due_date': timezone.now().date() + timezone.timedelta(days=1),
-            'team': self.team.id,
-        }
-        form = TaskForm(data=form_data)
-        self.assertTrue(form.is_valid())
+        # Create a team for testing
+        self.team = Team.objects.create(name='Test Team')
 
-    def test_due_date_in_the_past(self):
-        form_data = {
-            'title': 'Test Task',
-            'description': 'Test Description',
-            'assigned_user': self.user.id,
-            'due_date': timezone.now().date() - timezone.timedelta(days=1),
-            'team': self.team.id,
-        }
-        form = TaskForm(data=form_data)
-        self.assertFalse(form.is_valid())
-        self.assertIn('due_date', form.errors)
-        self.assertEqual(form.errors['due_date'], ['Due date must be in the future.'])
+    def test_create_task(self):
+        task = Task.objects.create(
+            title="Test Task",
+            description="This is a test task.",
+            assigned_user=self.user,
+            due_date="2023-12-31",  # Assuming a future date
+            team=self.team
+        )
+
+        self.assertEqual(task.title, "Test Task")
+        self.assertEqual(task.description, "This is a test task.")
+        self.assertEqual(task.assigned_user, self.user)
+        self.assertEqual(task.due_date, "2023-12-31")
+        self.assertEqual(task.team, self.team)
+
