@@ -22,32 +22,20 @@ from .signals import team_created_achievement  # Import your signal
 from .models import Task
 
 
-def accept_or_decline_invite(request, invite_id, action):
-    invite = Invite.objects.get(id=invite_id)
-    if invite.recipient == request.user:
-        if action == 'accept':
-            invite.status = 'accepted'
-            invite.save()
-            invite.team.members.add(request.user)
-            invite.team.save()
-            request.user.add_team(invite.team)
-            request.user.save()
-        elif action == 'decline':
-            invite.status = 'declined'
-            invite.save()
 
-    return JsonResponse({'message': 'Invitation updated successfully'})
-
-
+# Decorator indicating that only logged-in users can access this view
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
-
+    
+    # Retrieve the current logged-in user
     current_user = request.user
+    
     # User username is required for sorting tasks by assignedUsername
     current_userName = request.user.username
 
     # By default tasks and teams are in ascending order
+    # Retrieve the sorting order for tasks and teams from the query parameters
     sort_order = request.GET.get('sort_order', 'ascending')
     sort_by_team = request.GET.get('sort_order_team', 'ascending')
 
@@ -59,8 +47,10 @@ def dashboard(request):
     received_invitations = Invite.objects.filter(
         recipient=current_user, status='pending')
 
+    # Retrieve tasks assigned to the current user
     user_tasks = Task.objects.filter(assigned_user=current_user)
 
+    # Prepare the context dictionary to pass data to the template
     context = {
         'sent_invitations': sent_invitations,
         'received_invitations': received_invitations,
@@ -70,89 +60,8 @@ def dashboard(request):
         # Other context variables
     }
 
+    # Render the dashboard template with the context data
     return render(request, 'dashboard.html', context)
-
-
-'''Managing the accept invite and decline invite  and adding it into dashboard.html'''
-
-
-@login_required
-def accept_invite(request, invite_id):
-    invite = Invite.objects.get(id=invite_id)
-    if invite.recipient == request.user:
-        # Update the status to "accepted"
-        invite.status = 'accepted'
-        invite.save()
-        invite.team.members.add(request.user)
-        # Add the team to the user's teams
-        request.user.teams.add(invite.team)
-
-    # Redirect back to the dashboard
-    return redirect('dashboard')
-
-
-@login_required
-def decline_invite(request, invite_id):
-    invite = Invite.objects.get(id=invite_id)
-    if invite.recipient == request.user:
-        # Update the status to "declined"
-        invite.status = 'declined'
-        invite.save()
-    return redirect('dashboard')
-
-
-@login_required
-def send_invitation(request, user_id):
-    if request.method == 'POST':
-        form = InvitationForm(request.POST, user=request.user)
-
-        if form.is_valid():
-            # Get the selected user, team, and the logged-in sender
-            user = form.cleaned_data['user']
-            team = form.cleaned_data['team']
-            sender = request.user
-            status = 'pending'  # You can set the default status here
-
-            try:
-                # Create a new Invite instance
-                invite = Invite(sender=sender, recipient=user,
-                                team=team, status=status)
-
-                # Save the invitation to the database
-                invite.save()
-
-                # Add the invite to the sender's and recipient's sent and received invites
-                sender.sent_invites.add(invite)
-                user.received_invites.add(invite)
-
-                # Optionally, send notifications or emails to the recipient
-
-                # Redirect to a success page or back to the dashboard
-                messages.success(request, 'Invitation sent successfully!')
-                return redirect('dashboard')
-
-            except Exception as e:
-                # Log the exception for debugging
-                messages.error(request, f"An error occurred: {e}")
-
-        else:
-            # Add an error message if the form is not valid
-            error_message = ''
-            for field, errors in form.errors.items():
-                for error in errors:
-                    error_message += mark_safe(f'{field.capitalize()}: {error}')
-
-            messages.error(request, error_message)
-    else:
-        form = InvitationForm(user=request.user)
-
-    context = {
-        'form': form,
-        'user_teams': request.user.teams.all(),
-        'users': User.objects.all()
-    }
-
-    return render(request, 'send_invitation.html', context)
 
 
 @login_prohibited
@@ -160,6 +69,111 @@ def home(request):
     """Display the application's start/home screen."""
 
     return render(request, 'home.html')
+
+
+# Decorator indicating that only logged-in users can access this view
+@login_required
+def send_invitation(request, user_id):
+    # Check if the request method is POST
+    if request.method == 'POST':
+        # Create an InvitationForm instance with the submitted data and the logged-in user
+        form = InvitationForm(request.POST, user=request.user)
+        
+        # Check if the form is valid
+        if form.is_valid():
+            try:
+                # Create and save the invitation using a helper function
+                invite = create_and_save_invitation(request.user, form.cleaned_data['user'], form.cleaned_data['team'])
+                
+                # Send an invitation notification (if needed)
+                send_invitation_notification(invite.recipient)
+                
+                # Display a success message and redirect to the dashboard
+                messages.success(request, 'Invitation sent successfully!')
+                return redirect('dashboard')
+            except Exception as e:
+                # Display an error message if an exception occurs during the invitation process
+                messages.error(request, f"An error occurred: {e}")
+        else:
+            # Handle form errors and display error messages
+            handle_form_errors(request, form)
+    else:
+        # Create a new empty InvitationForm instance for rendering the form
+        form = InvitationForm(user=request.user)
+
+    # Prepare the context dictionary to pass data to the template
+    context = {
+        'form': form,
+        'user_teams': request.user.teams.all(),
+        'users': User.objects.all()
+    }
+
+    # Render the send_invitation.html template with the context data
+    return render(request, 'send_invitation.html', context)
+
+
+
+# Decorator indicating that only logged-in users can access this view
+@login_required
+def accept_invite(request, invite_id):
+    # Retrieve the invitation object based on the provided ID
+    invite = Invite.objects.get(id=invite_id)
+    
+    # Check if the logged-in user is the recipient of the invitation
+    if invite.recipient == request.user:
+        # Update the invitation status to 'accepted'
+        invite.status = 'accepted'
+        invite.save()
+        
+        # Add the user to the team associated with the invitation
+        invite.team.members.add(request.user)
+        
+        # Add the team to the user's teams
+        request.user.teams.add(invite.team)
+
+    # Redirect back to the dashboard
+    return redirect('dashboard')
+
+
+# Decorator indicating that only logged-in users can access this view
+@login_required
+def decline_invite(request, invite_id):
+    # Retrieve the invitation object based on the provided ID
+    invite = Invite.objects.get(id=invite_id)
+    
+    # Check if the logged-in user is the recipient of the invitation
+    if invite.recipient == request.user:
+        # Update the invitation status to 'declined'
+        invite.status = 'declined'
+        invite.save()
+
+    # Redirect back to the dashboard
+    return redirect('dashboard')
+
+
+
+
+# New helper functions
+
+def create_and_save_invitation(sender, recipient, team):
+    status = 'pending'
+    invite = Invite(sender=sender, recipient=recipient, team=team, status=status)
+    invite.save()
+    sender.sent_invites.add(invite)
+    recipient.received_invites.add(invite)
+    return invite
+
+def send_invitation_notification(user):
+    # Implementation of sending notification (if needed)
+    pass
+
+def handle_form_errors(request, form):
+    error_message = ''
+    for field, errors in form.errors.items():
+        for error in errors:
+            error_message += mark_safe(f'{field.capitalize()}: {error}')
+    messages.error(request, error_message)
+
 
 
 class LoginProhibitedMixin:
@@ -284,41 +298,32 @@ class SignUpView(LoginProhibitedMixin, FormView):
     redirect_when_logged_in_url = settings.REDIRECT_URL_WHEN_LOGGED_IN
 
     def form_valid(self, form):
+        """Handle form submission when valid."""
         self.object = form.save()
         login(self.request, self.object)
         return super().form_valid(form)
 
     def get_success_url(self):
+        """Return the URL to redirect to after successful sign-up."""
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
-
-
-# @login_required()
-# def create_team_view(request):
-#     """Display the team creation screen and handles team creations."""
-#
-#     if request.method == 'POST':
-#         form = TeamForm(request.POST)
-#         if form.is_valid():
-#             team = form.save()
-#             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
-#     else:
-#         form = TeamForm()
-#     return render(request, 'create_team.html', {'form': form})
 
 
 @login_required
 def team_members(request, team_id):
+    # Retrieve the team object or return a 404 response if not found
     team = get_object_or_404(Team, pk=team_id)
-    # Ensure the user is a member of the team
+
+    # Ensure the current user is a member of the specified team
     if request.user.teams.filter(id=team_id).exists():
+        # If authorized, get the members of the team
         members = team.members.all()
+        
+        # Render the 'team_members.html' template with the team and its members
         return render(request, 'team_members.html', {'team': team, 'members': members})
     else:
-        messages.error(
-            request, "You are not authorized to view this team's members.")
+        # If not authorized, display an error message and redirect to the dashboard
+        messages.error(request, "You are not authorized to view this team's members.")
         return redirect('dashboard')
-
-
 
 
 
@@ -367,29 +372,31 @@ def create_team_view(request):
 
 
 
-
-
 @login_required
 def invites_view(request):
     """Display team invitations sent to user"""
 
+    # Get the currently logged-in user
     current_user = request.user
 
-    # Get the user's invitations
+    # Get the user's received invitations
     invitations = Invite.objects.filter(recipient=current_user)
-    sent_invitations = Invite.objects.filter(
-        sender=current_user, status='pending')  # Query sent invitations by the user
 
-    received_invitations = Invite.objects.filter(
-        recipient=current_user, status='pending')
+    # Query sent invitations by the user with 'pending' status
+    sent_invitations = Invite.objects.filter(sender=current_user, status='pending')
 
+    # Query received invitations by the user with 'pending' status
+    received_invitations = Invite.objects.filter(recipient=current_user, status='pending')
+
+    # Prepare the context dictionary to pass data to the template
     context = {
         'sent_invitations': sent_invitations,
         'received_invitations': received_invitations,
         'user': current_user,
-        # Other context variables
+        # Other context variables can be added here
     }
 
+    # Render the 'invites.html' template with the provided context
     return render(request, 'invites.html', context)
 
 
@@ -402,23 +409,36 @@ def My_team(request):
 
 @login_required
 def create_task(request):
+    # Check if the request method is POST (form submission)
     if request.method == 'POST':
+        # Create a TaskForm instance with the data from the request
         form = TaskForm(request.POST)
+        # Check if the form is valid
         if form.is_valid():
             try:
+                # Use a transaction to save the task
                 with transaction.atomic():
+                    # Save the task without committing to the database
                     task = form.save(commit=False)
+                    # Assign the task to the current user
                     task.assigned_user = request.user
+                    # Save the task to the database
                     task.save()
 
                     # Handle other actions if needed
 
+                    # Display a success message
                     messages.success(request, 'Task created successfully!')
-                    return redirect('dashboard')  # Redirect to the 'dashboard' view
+                    # Redirect to the 'dashboard' view
+                    return redirect('dashboard')
             except Exception as e:
+                # Display an error message if an exception occurs during task creation
                 messages.error(request, f"An error occurred: {e}")
         else:
+            # Display an error message if the form is not valid
             messages.error(request, 'There was an error creating the task.')
     else:
+        # If the request method is not POST, create an empty TaskForm instance
         form = TaskForm()
+    # Render the 'create_task.html' template with the form
     return render(request, 'create_task.html', {'form': form})
