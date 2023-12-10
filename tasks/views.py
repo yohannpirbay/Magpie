@@ -22,23 +22,6 @@ from .signals import team_created_achievement  # Import your signal
 
 
 
-def accept_or_decline_invite(request, invite_id, action):
-    invite = Invite.objects.get(id=invite_id)
-    if invite.recipient == request.user:
-        if action == 'accept':
-            invite.status = 'accepted'
-            invite.save()
-            invite.team.members.add(request.user)
-            invite.team.save()
-            request.user.add_team(invite.team)
-            request.user.save()
-        elif action == 'decline':
-            invite.status = 'declined'
-            invite.save()
-
-    return JsonResponse({'message': 'Invitation updated successfully'})
-
-
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
@@ -98,7 +81,6 @@ def accept_invite(request, invite_id):
         invite.status = 'accepted'
         invite.save()
         invite.team.members.add(request.user)
-        print("I AM INSIDE ACCEPT INVITE VIEW")
         # Add the team to the user's teams
         request.user.teams.add(invite.team)
 
