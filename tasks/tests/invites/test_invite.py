@@ -1,12 +1,11 @@
 from django.test import TestCase
-from django.contrib.auth.models import User
-from .models import Team, Invite
+from tasks.models import Team, Invite, User
 
 class InviteTest(TestCase):
     def setUp(self):
         # Create two users for testing
-        self.sender_user = User.objects.create_user(username='sender_user', password='password1')
-        self.recipient_user = User.objects.create_user(username='recipient_user', password='password2')
+        self.sender_user = User.objects.create_user(username='sender_user', password='password1', email='email@gmail.com')
+        self.recipient_user = User.objects.create_user(username='recipient_user', password='password2', email='email1@gmail.com')
 
         # Create a team
         self.team = Team.objects.create(name='Team A')
