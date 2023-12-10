@@ -426,8 +426,6 @@ def My_team(request):
     return render(request, 'My_team.html')
 
 
-
-
 @login_required
 def create_task(request):
     # Check if the request method is POST (form submission)
@@ -461,5 +459,32 @@ def create_task(request):
     else:
         # If the request method is not POST, create an empty TaskForm instance
         form = TaskForm()
+
+        # Set the initial value of the 'selected-team' hidden field
+        if form.instance and hasattr(form.instance, 'team') and form.instance.team:
+            form.fields['team'].initial = str(form.instance.team.id)
+        else:
+            form.fields['team'].initial = ''
+
     # Render the 'create_task.html' template with the form
     return render(request, 'create_task.html', {'form': form})
+
+
+
+
+
+def get_users_for_team(request, team_id):
+    try:
+        # Fetch the team based on the provided ID
+        team = Team.objects.get(id=team_id)
+
+        # Get the users associated with the team
+        users = team.members.all()
+
+        # Create a JSON response with user data
+        user_data = [{'id': user.id, 'username': user.username} for user in users]
+
+        return JsonResponse(user_data, safe=False)
+    except Team.DoesNotExist:
+        # Return an empty JSON response if the team does not exist
+        return JsonResponse([], safe=False, status=404)

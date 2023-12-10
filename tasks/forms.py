@@ -185,7 +185,7 @@ class TeamForm(forms.ModelForm):
         return instance
 
 
-    
+
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
@@ -195,9 +195,28 @@ class TaskForm(forms.ModelForm):
             queryset=Team.objects.all(),
         )
 
+        assigned_user = forms.ModelChoiceField(
+            queryset=User.objects.none(),  # Initial queryset, it will be updated dynamically
+        )
+
         widgets = {
             'due_date': DateInput(attrs={'type': 'date'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+
+        # Check if team is selected
+        if 'team' in self.data:
+            try:
+                team_id = int(self.data.get('team'))
+                # Set the queryset for assigned_user based on the selected team
+                self.fields['assigned_user'].queryset = User.objects.filter(teams__id=team_id)
+            except (ValueError, TypeError):
+                pass  # Handle invalid team_id gracefully
+        else:
+            # No team selected, set the initial queryset to an empty list
+            self.fields['assigned_user'].queryset = User.objects.none()
 
     def clean_due_date(self):
         due_date = self.cleaned_data.get('due_date')
