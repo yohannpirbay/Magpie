@@ -23,7 +23,7 @@ from .models import Task
 
 
 
-# Decorator indicating that only logged-in users can access this view
+
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
@@ -154,7 +154,6 @@ def accept_invite(request, invite_id):
 
     # Redirect back to the dashboard
     return redirect('dashboard')
-
 
 # Decorator indicating that only logged-in users can access this view
 @login_required

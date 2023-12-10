@@ -3,32 +3,45 @@ from django.test import TestCase
 from django.urls import reverse
 from tasks.forms import LogInForm, TeamForm
 from tasks.models import User, Team
-from tasks.tests.helpers import LogInTester, MenuTesterMixin, reverse_with_next
 
-class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
-    """Tests of the log in view."""
+class CreateTeamViewTestCase(TestCase):
+    """Tests of the create team view"""
     """not finished yet"""
 
     fixtures = ['tasks/tests/fixtures/default_teams.json', 'tasks/tests/fixtures/default_user.json']
 
     def setUp(self):
-        pass
+        self.url = reverse('create_team')
+        self.user = User.objects.get(username='@johndoe')
 
-    def test_create_team_url_with_redirect(self):
-        pass
+    def test_create_team_url_when_logged_out(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
 
     def test_create_team_url_when_logged_in(self):
-        pass
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
 
     def test_create_team_with_blank_name(self):
-        pass
+        self.client.force_login(self.user)
+        data = {'name': '', 'description': 'Team Description'}
+        response = self.client.post(self.url, data)
+        self.assertFormError(response, 'form', 'name', 'This field is required.')
+
 
     def test_create_team_with_blank_description(self):
-        pass
+        self.client.force_login(self.user)
+        data = {'name': 'Team Name', 'description': ''}
+        response = self.client.post(self.url, data)
+        self.assertFormError(response, 'form', 'description', 'This field is required.')
 
     def test_succesful_team_creation(self):
-        pass
+        self.client.force_login(self.user)
+        data = {'name': 'Team Name', 'description': 'Team Description', 'members': self.user.id}
+        response = self.client.post(self.url, data)
+        print(response.content)
+        self.assertRedirects(response, reverse('dashboard'))
+        self.assertEqual(Team.objects.filter(name='Team Name').count(), 1)
 
-    def test_succesful_team_creation_with_redirect(self):
-        pass
 
