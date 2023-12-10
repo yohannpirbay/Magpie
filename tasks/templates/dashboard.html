@@ -8,6 +8,8 @@
   <title>Dashboard</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{% static 'dashboard.js' %}"></script>
+  <link rel="stylesheet" type="text/css" href="{% static 'dashboard.css' %}">
+
 
 
 </head>
@@ -102,14 +104,14 @@
         </form>
 
         <div class="row mt-4">
-        {% if tasks %}
-          <ul>
-            {% for task in tasks %}
-              <li>
+        {% if user_tasks %}
+          <ul id ="task-ul">
+            {% for task in user_tasks %}
+              <li id ="task-li">
                 <strong>Title:</strong> {{ task.title }}<br>
                 <strong>Description:</strong> {{ task.description }}<br>
                 <strong>Due Date:</strong> {{ task.dueDate }}<br>
-                <strong>Team:</strong> {{ task.team }}<br>
+                <strong>Team:</strong> {{ task.team.name }}<br>
               </li>
             {% endfor %}
           </ul>

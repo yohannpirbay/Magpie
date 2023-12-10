@@ -1,0 +1,24 @@
+/* static/your_app/dashboard.css */
+
+ul#task-ul{
+    list-style: none;
+    padding: 0;
+    list-style-type: none;
+}
+
+li#task-li {
+
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 10px; /* Add rounded corners for a softer look */
+}
+
+strong {
+    color: #007bff;
+}
+
+/* Add some spacing between tasks */
+li.task-item + li.task-item {
+    margin-top: 20px;
+}

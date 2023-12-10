@@ -92,26 +92,6 @@ class User(AbstractUser):
         self.teams.add(team)
 
 
-class Task(models.Model):
-    title = models.CharField(max_length=15, unique=False, blank=False)
-    description = models.CharField(max_length=120, blank=False)
-    assignedUsername = models.CharField(max_length=30,
-                                        blank=False,
-                                        unique=False,
-                                        validators=[RegexValidator(
-                                            regex=r'^@\w{3,}$',
-                                            message='Username must consist of @ followed by at least three alphanumericals'
-                                        )])
-    dueDate = models.DateField(blank=False, default="2032-12-25")
-    team = models.ForeignKey(
-        Team, on_delete=models.CASCADE, null=True, blank=True)
-
-    def get_teams(self):
-        return self.teams.all()
-
-    def add_team(self, team):
-        self.teams.add(team)
-
 
 class Invite(models.Model):
     sender = models.ForeignKey(
@@ -121,3 +101,12 @@ class Invite(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, default=None)
     status = models.CharField(max_length=20, choices=(
         ('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')), default=None)
+
+
+
+class Task(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    assigned_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    due_date = models.DateField()
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='tasks')

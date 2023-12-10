@@ -4,8 +4,8 @@ from django.contrib.auth import authenticate, get_user_model
 from django.core.validators import RegexValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError 
-from .models import User, Team, Task, Invite
-
+from .models import User, Team, Invite, Task
+from django.forms.widgets import DateInput
 
 
 
@@ -160,48 +160,6 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
         return user
     
 
-class TaskForm(forms.ModelForm):
-    class Meta:
-        """Form options."""
-
-        model = Task
-        fields = ['title', 'description', 'assignedUsername', 'dueDate', 'team']
-
-        team = forms.ModelChoiceField(
-            queryset=Team.objects.all(),
-            #widget=forms.Select(attrs={'class': 'select2'}),
-        )
-
-        widgets = {
-            'dueDate': forms.SelectDateWidget(
-                empty_label=("Choose Year", "Choose Month", "Choose Day")
-            )
-        }
-
-    def clean_assignedUsername(self):
-        assigned_Username = self.cleaned_data.get("assignedUsername")
-        if not User.objects.filter(username = assigned_Username).exists():
-            raise forms.ValidationError("An account using this email does not exist")
-        return assigned_Username
-    
-    def clean_dueDate(self):
-        due_date = self.cleaned_data.get('dueDate')
-        if due_date < timezone.now().date():
-            raise forms.ValidationError('Due date must be in the future.')
-        return due_date
-    
-    def save(self, commit = True):
-        """Save a new task."""
-        #before saving check form.is_valid in the outside view handling the form
-        title = self.cleaned_data.get('title')
-        description = self.cleaned_data.get('description')
-        assignedUsername = self.cleaned_data.get('assignedUsername')
-        dueDate = self.cleaned_data.get('dueDate')
-        team = self.cleaned_data.get('team')          
-        task = Task(title = title, description = description, assignedUsername = assignedUsername, dueDate = dueDate, team = team)
-        if commit:
-            task.save()
-        return task
 
 
 class TeamForm(forms.ModelForm):
@@ -225,3 +183,25 @@ class TeamForm(forms.ModelForm):
             instance.save()
             self.save_m2m()
         return instance
+
+
+
+class TaskForm(forms.ModelForm):
+
+
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'assigned_user', 'due_date', 'team']
+
+        widgets = {
+            'due_date': DateInput(attrs={'type': 'date'}),
+        }
+
+    def clean_due_date(self):
+        due_date = self.cleaned_data.get('due_date')
+        if due_date < timezone.now().date():
+            raise forms.ValidationError('Due date must be in the future.')
+        return due_date
+    
+    
+

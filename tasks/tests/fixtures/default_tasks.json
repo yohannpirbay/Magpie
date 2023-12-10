@@ -1,24 +1,24 @@
 [
-    {
-      "model": "tasks.Task",
-      "pk": 1,
-      "fields": {
-        "title": "Task1",
-        "description": "Build the system",
-        "assignedUsername": "@johndoe",
-        "dueDate": "2032-12-25",
-        "team": 1
-      }
-    },
-    {
-        "model": "tasks.Task",
-        "pk": 2,
-        "fields": {
-          "title": "Task2",
-          "description": "Create the dependencies",
-          "assignedUsername": "@thisEmailInvalid",
-          "dueDate": "2032-12-26",
-          "team": 1
-        }
-      }
-  ]
+  {
+    "model": "tasks.task",
+    "pk": 1,
+    "fields": {
+      "title": "Task1",
+      "description": "Build the system",
+      "assigned_user": 1,
+      "due_date": "2032-12-25",
+      "team": 1
+    }
+  },
+  {
+    "model": "tasks.task",
+    "pk": 2,
+    "fields": {
+      "title": "Task2",
+      "description": "Another task description",
+      "assigned_user": 1,
+      "due_date": "2033-01-10",
+      "team": 1
+    }
+  }
+]
