@@ -50,13 +50,16 @@ def dashboard(request):
     # Retrieve tasks assigned to the current user
     user_tasks = Task.objects.filter(assigned_user=current_user)
 
+    # Retrieve the user's achievements
+    user_achievements = current_user.achievements.all()
+    
     # Prepare the context dictionary to pass data to the template
     context = {
         'sent_invitations': sent_invitations,
         'received_invitations': received_invitations,
         'user': current_user,
         'user_tasks': user_tasks,
-        
+        'achievements': user_achievements, 
         # Other context variables
     }
 
