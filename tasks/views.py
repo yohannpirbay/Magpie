@@ -23,7 +23,7 @@ from .models import Task
 
 
 
-# Decorator indicating that only logged-in users can access this view
+
 @login_required
 def dashboard(request):
     """Display the current user's dashboard."""
@@ -132,6 +132,7 @@ def send_invitation(request, user_id):
 
     # Render the send_invitation.html template with the context data
     return render(request, 'send_invitation.html', context)
+
 
 
 
