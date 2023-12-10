@@ -60,10 +60,12 @@ def dashboard(request):
     if sort_by_team == 'ascending':
         tasks = tasks.order_by('team__name', 'due_date')
     else:
+
         tasks = tasks.order_by('-team__name', '-due_date')
 
     # Retrieve tasks assigned to the current user
     user_tasks = Task.objects.filter(assigned_user=current_user)
+
 
     # Retrieve the user's achievements
     user_achievements = current_user.achievements.all()
@@ -75,6 +77,7 @@ def dashboard(request):
         'user': current_user,
         'user_tasks': user_tasks,
         'achievements': user_achievements, 
+
         # Other context variables
     }
 

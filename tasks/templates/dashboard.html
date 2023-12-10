@@ -27,6 +27,18 @@
           <a href='{% url 'My_team' %}' class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             My Teams <span class="badge bg-primary rounded-pill">14</span>
           </a>
+          <div id="achievements">
+            <h3>Achievements</h3>
+            {% if achievements %}
+                <ul>
+                    {% for achievement in achievements %}
+                        <li>{{ achievement.name }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No achievements yet.</p>
+            {% endif %}
+        </div>
         </ul>
         </p>
 
