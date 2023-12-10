@@ -11,7 +11,7 @@ class TaskFormTestCase(TestCase):
     fixtures = [
         'tasks/tests/fixtures/default_teams.json',
         'tasks/tests/fixtures/other_users.json',  # Update the fixture path
-    ]
+    ] 
 
     def setUp(self):
         self.team = Team.objects.get(name='BronzeBulls')
