@@ -47,6 +47,21 @@ def dashboard(request):
     received_invitations = Invite.objects.filter(
         recipient=current_user, status='pending')
 
+ 
+    # Retrieve tasks only assigned to the current user and from the specific teams
+    tasks = Task.objects.filter(
+        assigned_user=current_user, team__members=current_user)
+
+    if sort_order == 'ascending':
+        tasks = tasks.order_by('due_date')
+    else:
+        tasks = tasks.order_by('-due_date')
+
+    if sort_by_team == 'ascending':
+        tasks = tasks.order_by('team__name', 'due_date')
+    else:
+        tasks = tasks.order_by('-team__name', '-due_date')
+
     # Retrieve tasks assigned to the current user
     user_tasks = Task.objects.filter(assigned_user=current_user)
 
