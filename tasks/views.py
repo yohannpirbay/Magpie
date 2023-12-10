@@ -179,12 +179,17 @@ def decline_invite(request, invite_id):
 # New helper functions
 
 def create_and_save_invitation(sender, recipient, team):
-    status = 'pending'
-    invite = Invite(sender=sender, recipient=recipient, team=team, status=status)
-    invite.save()
-    sender.sent_invites.add(invite)
-    recipient.received_invites.add(invite)
-    return invite
+    # Check if the user is already a member of the team
+    if recipient in team.members.all():
+        # If already a team member
+        pass
+    else:
+        status = 'pending'
+        invite = Invite(sender=sender, recipient=recipient, team=team, status=status)
+        invite.save()
+        sender.sent_invites.add(invite)
+        recipient.received_invites.add(invite)
+        return invite
 
 def send_invitation_notification(user):
     # Implementation of sending notification (if needed)
@@ -364,8 +369,11 @@ def create_team_view(request):
 
                     # Add the selected users to the team's members
                     for selected_user in form.cleaned_data['members']:
-                        team.members.add(selected_user)
+                        if selected_user != request.user:
+                            create_and_save_invitation(request.user, selected_user, team)
 
+                        # Add the creator to the team directly
+                    team.members.add(request.user)
                     team.save()
                     
                     request.user.add_team(team)
