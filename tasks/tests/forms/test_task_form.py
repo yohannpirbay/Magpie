@@ -1,35 +1,46 @@
+# In your tests.py file
+
 from django.test import TestCase
-from django.utils import timezone
+from tasks.models import User
 from tasks.forms import TaskForm
-from tasks.models import Task, Team, User
-from datetime import date
+from datetime import datetime, timedelta
+from tasks.models import Team
 
-class TaskFormTestCase(TestCase):
-
+class TaskFormTest(TestCase):
     def setUp(self):
-        # Create a team and a user for the form to use in the queryset
-        self.team = Team.objects.create(name='Test Team', description='Test description')
-        self.user = User.objects.create(username='testuser', password='testpassword')
+        # Create a user for testing
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
 
-    def test_valid_form(self):
-        data = {
-            'title': 'Test Task',
-            'description': 'Test description',
-            'assigned_user': self.user.id,
-            'due_date': date.today() + timezone.timedelta(days=7),
-            'team': self.team.id,
-        }
-        form = TaskForm(data=data)
-        self.assertTrue(form.is_valid())
+        # Create teams for testing
+        self.team1 = Team.objects.create(name='Team 1')
+        self.team2 = Team.objects.create(name='Team 2')
 
-    def test_due_date_in_past(self):
-        data = {
+        # Add the user to team1
+        self.team1.members.add(self.user)
+
+    def test_task_form_valid(self):
+        form_data = {
             'title': 'Test Task',
-            'description': 'Test description',
+            'description': 'This is a test task.',
+            'team': self.team1.id,  # Choosing the team before the user
             'assigned_user': self.user.id,
-            'due_date': date.today() - timezone.timedelta(days=1),
-            'team': self.team.id,
+            'due_date': (datetime.now() + timedelta(days=7)).date(),  # Future date
         }
-        form = TaskForm(data=data)
+
+        form = TaskForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+
+
+
+    def test_task_form_invalid_team_not_chosen(self):
+        # Omit the team from the form data
+        form_data = {
+            'title': 'Test Task',
+            'description': 'This is a test task.',
+            'assigned_user': self.user.id,
+            'due_date': (datetime.now() + timedelta(days=7)).date(),  # Future date
+        }
+
+        form = TaskForm(data=form_data)
         self.assertFalse(form.is_valid())
-        self.assertIn('Due date must be in the future.', form.errors['due_date'])
+        self.assertIn('team', form.errors)
