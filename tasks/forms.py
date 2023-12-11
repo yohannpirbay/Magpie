@@ -188,15 +188,19 @@ class TeamForm(forms.ModelForm):
 
 class TaskForm(forms.ModelForm):
 
+    assigned_users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        widget=forms.CheckboxSelectMultiple(),  # Use CheckboxSelectMultiple for multiple selections
+    )
 
     class Meta:
         model = Task
-        fields = ['title', 'description', 'due_date', 'team','assigned_user']
+        fields = ['title', 'description', 'due_date', 'team', 'assigned_users']
 
         widgets = {
             'due_date': DateInput(attrs={'type': 'date'}),
         }
-
+    
     def clean_due_date(self):
         due_date = self.cleaned_data.get('due_date')
         if due_date < timezone.now().date():

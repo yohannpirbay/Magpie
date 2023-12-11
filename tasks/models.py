@@ -108,7 +108,7 @@ class Invite(models.Model):
 class Task(models.Model):
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=150)
-    assigned_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    assigned_users = models.ManyToManyField(User, related_name='tasks_assigned')
     due_date = models.DateField()
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='tasks')
     is_finished = models.BooleanField(default=False)  # Default to not finished

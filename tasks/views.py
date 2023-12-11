@@ -47,10 +47,10 @@ def dashboard(request):
  
     # Retrieve tasks only assigned to the current user and from the specific teams
     tasks = Task.objects.filter(
-        assigned_user=current_user, team__members=current_user)
+        assigned_users=current_user, team__members=current_user)
 
     # Retrieve tasks assigned to the current user
-    user_tasks = Task.objects.filter(assigned_user=current_user)
+    user_tasks = Task.objects.filter(assigned_users=current_user)
 
 
     # Retrieve the user's achievements
@@ -430,18 +430,19 @@ def My_team(request):
 def get_users_for_team(request, team_id):
     try:
         # Fetch the team based on the provided ID
-        team = Team.objects.get(id=team_id)
+        team = get_object_or_404(Team, id=team_id)
 
         # Get the users associated with the team
         users = team.members.all()
 
         # Create a JSON response with user data
         user_data = [{'id': user.id, 'username': user.username} for user in users]
+        print(team_id)
+        
 
         return JsonResponse(user_data, safe=False)
     except Team.DoesNotExist:
-        # Return an empty JSON response if the team does not exist
-        return JsonResponse([], safe=False, status=404)
+        raise Http404("Team does not exist")
     
     
     
@@ -449,23 +450,22 @@ def get_users_for_team(request, team_id):
 def create_task(request):
     # Check if the request method is POST
     if request.method == 'POST':
+        print("Received form data:", request.POST)
         # Create a TaskForm instance with the POST data
         form = TaskForm(request.POST)
         
         # Check if the form is valid
         if form.is_valid():
+            print("Form is valid. Saving task...")
             try:
-                # Get the assigned_user from the form's cleaned data
-                assigned_user = form.cleaned_data['assigned_user']
-
                 # Use a transaction to ensure atomicity
                 with transaction.atomic():
                     # Create a task object without saving it to the database
                     task = form.save(commit=False)
-                    # Set the assigned_user field
-                    task.assigned_user = assigned_user
-                    # Save the task to the database
                     task.save()
+                    # Set the assigned_user field
+                    task.assigned_users.set(form.cleaned_data['assigned_users'])
+                    
 
                     # Display success message and redirect to the dashboard
                     messages.success(request, 'Task created successfully!')
@@ -476,6 +476,7 @@ def create_task(request):
         else:
             # Display an error message if the form is not valid
             messages.error(request, 'There was an error creating the task.')
+            print("Form is not valid. Form errors:", form.errors)
     else:
         # If the request method is not POST, create an empty TaskForm
         form = TaskForm()

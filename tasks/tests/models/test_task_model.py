@@ -15,14 +15,14 @@ class TaskModelTestCase(TestCase):
         task = Task.objects.create(
             title="Test Task",
             description="This is a test task.",
-            assigned_user=self.user,
             due_date="2023-12-31",  # Assuming a future date
             team=self.team
         )
+        task.assigned_users.set([self.user])
 
         self.assertEqual(task.title, "Test Task")
         self.assertEqual(task.description, "This is a test task.")
-        self.assertEqual(task.assigned_user, self.user)
+        self.assertIn(self.user, task.assigned_users.all())
         self.assertEqual(task.due_date, "2023-12-31")
         self.assertEqual(task.team, self.team)
 
