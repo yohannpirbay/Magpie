@@ -82,7 +82,10 @@
                     <strong>Team:</strong> {{ task.team.name }}<br>
                     
                     <!-- Add button to mark task as finished -->
-                    <button class="btn btn-success" onclick="markAsFinished('{{ task.id }}')">Mark as Finished</button>
+                    <button class="btn btn-success"   onclick="markAsFinished('{{ task.id }}')">
+                      &#10003; <!-- Checkmark symbol -->
+                    </button>
+
                   </li>
                 {% endif %}
               {% endfor %}
