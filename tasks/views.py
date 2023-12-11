@@ -47,6 +47,8 @@ def dashboard(request):
     received_invitations = Invite.objects.filter(
         recipient=current_user, status='pending')
 
+    pending_invites_count = Invite.objects.filter(recipient=current_user, status='pending').count()
+
  
     # Retrieve tasks only assigned to the current user and from the specific teams
     tasks = Task.objects.filter(
@@ -76,7 +78,8 @@ def dashboard(request):
         'received_invitations': received_invitations,
         'user': current_user,
         'user_tasks': user_tasks,
-        'achievements': user_achievements, 
+        'achievements': user_achievements,
+        'pending_invites_count': pending_invites_count,
 
         # Other context variables
     }
