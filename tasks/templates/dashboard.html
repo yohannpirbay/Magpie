@@ -11,8 +11,6 @@
   <link rel="stylesheet" type="text/css" href="{% static 'dashboard.css' %}">
   <script src="{% static 'dashboard_task_is_finished.js' %}"></script>
 
-
-
 </head>
 
 <body>
@@ -98,22 +96,27 @@
           {% endif %}
         </div>
         
-        <!-- Finished Tasks section -->
-        <h2>Finished Tasks:</h2>
-        <div class="row mt-4">
+      <!-- Finished Tasks section -->
+      <h2>Finished Tasks:</h2>
+      <div class="row mt-4">
+        {% if user_tasks %}
           <ul id="finished-task-ul">
             {% for task in user_tasks %}
               {% if task.is_finished %}
                 <li class="finished-task-li" id="finished-task-li-{{ task.id }}">
                   <strong>Title:</strong> {{ task.title }}<br>
                   <strong>Description:</strong> {{ task.description }}<br>
-                  <strong>Finished on:</strong> {{ task.finished_on}}<br>
+                  <strong>Finished on:</strong> {{ task.finished_on }}<br>
                   <strong>Team:</strong> {{ task.team.name }}<br>
                 </li>
               {% endif %}
             {% endfor %}
           </ul>
-        </div>
+        {% else %}
+          <p>No finished tasks yet.</p>
+        {% endif %}
+      </div>
+
     
   </div>
 </div>

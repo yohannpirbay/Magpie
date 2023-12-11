@@ -7,7 +7,6 @@ ul#task-ul{
     
 }
 
-
 li#task-li {
 
     border: 1px solid #ddd;
@@ -19,13 +18,6 @@ li#task-li {
 strong {
     color: #007bff;
 }
-
-
-
-
-
-
-
 
 /* Style for the section heading */
 .section-heading {
@@ -62,8 +54,6 @@ strong {
     transform: translateY(-50%); /* Adjust vertical position */
     right: 10px; /* Adjust the distance from the right edge */
   }
-  
-  
   
   /* Style for the task list container */
   .row {
