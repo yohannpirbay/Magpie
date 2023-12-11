@@ -428,16 +428,21 @@ def My_team(request):
 
 
 def get_users_for_team(request, team_id):
-    # Fetch the team based on the provided ID
-    team = get_object_or_404(Team, id=team_id)
+    try:
+        # Fetch the team based on the provided ID
+        team = get_object_or_404(Team, id=team_id)
 
-    # Get the users associated with the team
-    users = User.objects.filter(teams=team)
+        # Get the users associated with the team
+        users = team.members.all()
 
-    # Create a JSON response with user data
-    user_data = [{'id': user.id, 'username': user.username} for user in users]
+        # Create a JSON response with user data
+        user_data = [{'id': user.id, 'username': user.username} for user in users]
+        print(team_id)
+        
 
-    return JsonResponse(user_data, safe=False)
+        return JsonResponse(user_data, safe=False)
+    except Team.DoesNotExist:
+        raise Http404("Team does not exist")
     
     
     

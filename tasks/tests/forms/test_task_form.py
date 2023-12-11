@@ -23,7 +23,7 @@ class TaskFormTest(TestCase):
             'title': 'Test Task',
             'description': 'This is a test task.',
             'team': self.team1.id,  # Choosing the team before the user
-            'assigned_user': self.user.id,
+            'assigned_users': [self.user.id],
             'due_date': (datetime.now() + timedelta(days=7)).date(),  # Future date
         }
 
@@ -37,7 +37,7 @@ class TaskFormTest(TestCase):
         form_data = {
             'title': 'Test Task',
             'description': 'This is a test task.',
-            'assigned_user': self.user.id,
+            'assigned_users': self.user.id,
             'due_date': (datetime.now() + timedelta(days=7)).date(),  # Future date
         }
 

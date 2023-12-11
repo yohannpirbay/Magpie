@@ -16,15 +16,15 @@ class UpdateTaskStatusTestCase(TestCase):
         )
         team.members.add(user)
 
-        # Create a task for testing with a due date, assigned user, and team
+        # Create a task for testing with a due date, assigned users, and team
         due_date = timezone.now() + timedelta(days=7)
         self.task = Task.objects.create(
             title='Test Task',
             is_finished=False,
             due_date=due_date,
-            assigned_user=user,
             team=team,
         )
+        self.task.assigned_users.set([user])
 
     def test_update_task_status(self):
         # Get the initial values
