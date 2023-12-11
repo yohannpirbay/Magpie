@@ -20,8 +20,8 @@ from django.db import transaction
 from django.utils.safestring import mark_safe
 from .signals import team_created_achievement  # Import your signal
 from .models import Task
-
-
+from django.http import Http404
+from django.utils import timezone
 
 
 @login_required
@@ -458,7 +458,7 @@ def get_users_for_team(request, team_id):
     
     
     
-from django.http import Http404
+
 
 @login_required
 def create_task(request):
@@ -490,3 +490,14 @@ def create_task(request):
             form.fields['team'].initial = ''
 
     return render(request, 'create_task.html', {'form': form})
+
+
+def update_task_status(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    # Your logic to update the task status
+    task.is_finished = True
+    task.finished_on = timezone.now()  # Record the finished_on time
+    task.save()
+
+    return JsonResponse({'success': True})

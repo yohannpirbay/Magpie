@@ -4,7 +4,9 @@ ul#task-ul{
     list-style: none;
     padding: 0;
     list-style-type: none;
+    
 }
+
 
 li#task-li {
 
@@ -18,7 +20,62 @@ strong {
     color: #007bff;
 }
 
-/* Add some spacing between tasks */
-li.task-item + li.task-item {
-    margin-top: 20px;
-}
+
+
+
+
+
+
+
+/* Style for the section heading */
+.section-heading {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  /* Style for the task list */
+  .task-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  /* Style for individual tasks */
+  .task-li {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  /* Style for the "Mark as Finished" button */
+  .btn-success {
+    background-color: #5cb85c;
+    color: #fff;
+    border: 1px solid #4cae4c;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  /* Style for finished tasks */
+  .finished-task-li {
+    background-color: #dff0d8;
+    border: 1px solid #d6e9c6;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  /* Style for the task list container */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  /* Style for the finished task list */
+  #finished-task-ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex; /* Display finished tasks in a row */
+  }
+
+  

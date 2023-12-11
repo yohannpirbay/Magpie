@@ -5,6 +5,7 @@ from libgravatar import Gravatar
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.utils import timezone
 # models.py
 
 
@@ -106,7 +107,9 @@ class Invite(models.Model):
 
 class Task(models.Model):
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.CharField(max_length=150)
     assigned_user = models.ForeignKey(User, on_delete=models.CASCADE)
     due_date = models.DateField()
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='tasks')
+    is_finished = models.BooleanField(default=False)  # Default to not finished
+    finished_on = models.DateTimeField(null=True, blank=True)
