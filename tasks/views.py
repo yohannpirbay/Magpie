@@ -34,11 +34,6 @@ def dashboard(request):
     # User username is required for sorting tasks by assignedUsername
     current_userName = request.user.username
 
-    # By default tasks and teams are in ascending order
-    # Retrieve the sorting order for tasks and teams from the query parameters
-    sort_order = request.GET.get('sort_order', 'ascending')
-    sort_by_team = request.GET.get('sort_order_team', 'ascending')
-
     # Get the user's invitations
     invitations = Invite.objects.filter(recipient=current_user)
     sent_invitations = Invite.objects.filter(
@@ -51,17 +46,6 @@ def dashboard(request):
     # Retrieve tasks only assigned to the current user and from the specific teams
     tasks = Task.objects.filter(
         assigned_user=current_user, team__members=current_user)
-
-    if sort_order == 'ascending':
-        tasks = tasks.order_by('due_date')
-    else:
-        tasks = tasks.order_by('-due_date')
-
-    if sort_by_team == 'ascending':
-        tasks = tasks.order_by('team__name', 'due_date')
-    else:
-
-        tasks = tasks.order_by('-team__name', '-due_date')
 
     # Retrieve tasks assigned to the current user
     user_tasks = Task.objects.filter(assigned_user=current_user)
@@ -501,3 +485,7 @@ def update_task_status(request, task_id):
     task.save()
 
     return JsonResponse({'success': True})
+
+
+def sort_tasks(reqeust):
+    pass

@@ -1,3 +1,4 @@
+// Function to mark a task as finished
 function markAsFinished(taskId) {
   // Find the task in the "Tasks" section
   var taskElement = document.getElementById(`task-li-${taskId}`);
@@ -63,4 +64,35 @@ function getCookie(name) {
   return cookieValue;
 }
 
-  
+// Function to handle search as you type
+function handleSearch() {
+  var searchInput = document.getElementById('search');
+  var searchKeyword = searchInput.value.toLowerCase();
+
+  // Loop through tasks in "Tasks" section
+  var taskList = document.getElementById('task-ul');
+  var tasks = taskList.getElementsByTagName('li');
+
+  // Loop through finished tasks in "Finished Tasks" section
+  var finishedTaskList = document.getElementById('finished-task-ul');
+  var finishedTasks = finishedTaskList.getElementsByTagName('li');
+
+  // Combine tasks from both sections
+  var allTasks = Array.from(tasks).concat(Array.from(finishedTasks));
+
+  for (var i = 0; i < allTasks.length; i++) {
+    var task = allTasks[i];
+    var taskText = task.textContent.toLowerCase();
+
+    // Show or hide tasks based on search keyword
+    if (taskText.includes(searchKeyword)) {
+      task.style.display = 'block';
+    } else {
+      task.style.display = 'none';
+    }
+  }
+}
+
+
+// Attach the handleSearch function to the "input" event of the search input
+document.getElementById('search').addEventListener('input', handleSearch);
