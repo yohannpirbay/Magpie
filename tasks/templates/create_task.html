@@ -5,13 +5,12 @@
         <div class="col-12">
             <h1>Create Task</h1>
             <form action="{% url 'create_task' %}" method="post">
-            {% csrf_token %}
-            <form action="{% url 'create_task' %}" method="post" id="create-task-form">
+                {% csrf_token %}
+                {{form.as_p}}
 
-            {% include 'partials/bootstrap_form.html' with form=form %}
 
                 <!-- Add a hidden input field to store the selected team -->
-                <input type="hidden" id="selected-team" name="team" value="{% if form.instance.team %}{{ form.instance.team.id }}{% endif %}">
+                <input type="hidden" id="id_team" name="team" value="{% if form.instance.team %}{{ form.instance.team.id }}{% endif %}">
 
 
             <input type="submit" value="Create Task" class="btn btn-primary" style="margin-bottom: 20px;">
@@ -21,44 +20,40 @@
 </div>
 
 <script>
-    // Add JavaScript to handle dynamic form field updates based on the selected team
-    document.getElementById('id_team').addEventListener('change', function () {
-        var selectedTeam = this.value;
-        console.log('Selected Team:', selectedTeam);
-    
-        document.getElementById('selected-team').value = selectedTeam;
-    
-        // Fetch users for the selected team using AJAX (you may need to adjust this)
+    document.addEventListener('DOMContentLoaded', function() {
+        const teamField = document.getElementById('id_team');
+        teamField.addEventListener('change', updateUsers);
+    });
+
+    function updateUsers() {
+        const selectedTeam = document.getElementById('id_team').value;
+
         fetch(`/get_users_for_team/${selectedTeam}/`)
             .then(response => response.json())
             .then(data => {
-                var assignedUserField = document.getElementById('id_assigned_user');
-                
-                // Clear existing options in the assigned_user field
-                assignedUserField.innerHTML = '';
-                console.log('Cleared existing options in assigned_user field.');
-    
-                // Add an empty option as the default
-                var emptyOption = document.createElement('option');
-                emptyOption.value = '';
-                emptyOption.text = '---------';
-                assignedUserField.add(emptyOption);
-                console.log('Added empty option as the default.');
-    
-                // Update the options in the assigned_user field
+                console.log(data)
+                const assignedUsersContainer = document.getElementById('id_assigned_users');
+                assignedUsersContainer.innerHTML = '';
+
                 data.forEach(user => {
-                    var option = document.createElement('option');
-                    option.value = user.id;
-                    option.text = user.username;
-                    assignedUserField.add(option);
+                    const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'assigned_users';  // Adjust as needed
+                checkbox.value = user.id;
+                checkbox.id = `user_${user.id}`;
+
+                const label = document.createElement('label');
+                label.htmlFor = `user_${user.id}`;
+                label.appendChild(document.createTextNode(user.username));
+
+                assignedUsersContainer.appendChild(checkbox);
+                assignedUsersContainer.appendChild(label);
                 });
-                console.log('Updated options in assigned_user field:', data);
             })
             .catch(error => {
-                console.error('Error fetching users:', error);
+                console.error('Error fetching users', error);
             });
-    });
-    
-    </script>
+    }
+</script>
     
 {% endblock %}
