@@ -4,7 +4,9 @@ ul#task-ul{
     list-style: none;
     padding: 0;
     list-style-type: none;
+    
 }
+
 
 li#task-li {
 
@@ -18,7 +20,74 @@ strong {
     color: #007bff;
 }
 
-/* Add some spacing between tasks */
-li.task-item + li.task-item {
-    margin-top: 20px;
+
+
+
+
+
+
+
+/* Style for the section heading */
+.section-heading {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  /* Style for the task list */
+  .task-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+/* Style for individual tasks */
+.task-li {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    position: relative; /* Set position to relative */
+  }
+  
+  /* Style for the "Mark as Finished" button */
+  .btn-success {
+    background-color: #5cb85c;
+    color: #fff;
+    border: 1px solid #4cae4c;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    position: absolute; /* Set position to absolute */
+    top: 50%; /* Align to the middle vertically */
+    transform: translateY(-50%); /* Adjust vertical position */
+    right: 10px; /* Adjust the distance from the right edge */
+  }
+  
+  
+  
+  /* Style for the task list container */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+/* Style for the finished task list container */
+#finished-task-ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap; /* Allow tasks to wrap to the next row */
+    justify-content: flex-start; /* Place tasks at the start of the row */
+  }
+  
+  .finished-task-li {
+    flex-basis: calc(25% - 10px); /* Adjust the width as needed, 4 tasks in a row */
+    box-sizing: border-box; /* Include padding and border in the width calculation */
+    margin-bottom: 40px;
+  }
+  
+
+.margin-20px{
+    margin: 20px;
 }
+ 

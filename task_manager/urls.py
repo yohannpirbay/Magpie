@@ -37,4 +37,5 @@ urlpatterns = [
     path('team/<int:team_id>/members/', views.team_members, name='team_members'),
     path('create-task/', views.create_task, name='create_task'),
     path('get_users_for_team/<int:team_id>/', views.get_users_for_team, name='get_users_for_team'),
+    path('update_task_status/<int:task_id>/', views.update_task_status, name='update_task_status'),
 ]

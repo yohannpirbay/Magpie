@@ -55,7 +55,7 @@ class AchievementAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['title', 'description','assigned_user', 'due_date', 'team']
+    list_display = ['title', 'description','assigned_user', 'due_date', 'team', 'id', 'is_finished', 'finished_on']
 
 
 

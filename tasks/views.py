@@ -20,8 +20,8 @@ from django.db import transaction
 from django.utils.safestring import mark_safe
 from .signals import team_created_achievement  # Import your signal
 from .models import Task
-
-
+from django.http import Http404
+from django.utils import timezone
 
 
 @login_required
@@ -33,11 +33,6 @@ def dashboard(request):
     
     # User username is required for sorting tasks by assignedUsername
     current_userName = request.user.username
-
-    # By default tasks and teams are in ascending order
-    # Retrieve the sorting order for tasks and teams from the query parameters
-    sort_order = request.GET.get('sort_order', 'ascending')
-    sort_by_team = request.GET.get('sort_order_team', 'ascending')
 
     # Get the user's invitations
     invitations = Invite.objects.filter(recipient=current_user)
@@ -53,17 +48,6 @@ def dashboard(request):
     # Retrieve tasks only assigned to the current user and from the specific teams
     tasks = Task.objects.filter(
         assigned_user=current_user, team__members=current_user)
-
-    if sort_order == 'ascending':
-        tasks = tasks.order_by('due_date')
-    else:
-        tasks = tasks.order_by('-due_date')
-
-    if sort_by_team == 'ascending':
-        tasks = tasks.order_by('team__name', 'due_date')
-    else:
-
-        tasks = tasks.order_by('-team__name', '-due_date')
 
     # Retrieve tasks assigned to the current user
     user_tasks = Task.objects.filter(assigned_user=current_user)
@@ -461,7 +445,7 @@ def get_users_for_team(request, team_id):
     
     
     
-from django.http import Http404
+
 
 @login_required
 def create_task(request):
@@ -493,3 +477,18 @@ def create_task(request):
             form.fields['team'].initial = ''
 
     return render(request, 'create_task.html', {'form': form})
+
+
+def update_task_status(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    # Your logic to update the task status
+    task.is_finished = True
+    task.finished_on = timezone.now()  # Record the finished_on time
+    task.save()
+
+    return JsonResponse({'success': True})
+
+
+def sort_tasks(reqeust):
+    pass
