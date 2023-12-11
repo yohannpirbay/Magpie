@@ -8,8 +8,7 @@
   <title>Dashboard</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{% static 'dashboard.js' %}"></script>
-
-
+  <link rel="stylesheet" type="text/css" href="{% static 'dashboard.css' %}">
 </head>
 
 <body>
@@ -25,10 +24,23 @@
           <a href='{% url 'My_team' %}' class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             My Teams <span class="badge bg-primary rounded-pill">14</span>
           </a>
+
+          <div id="achievements">
+            <p>
+              <h3>Achievements</h3>
+              {% if achievements %}
+                  <ul>
+                      {% for achievement in achievements %}
+                          <li>{{ achievement.name }}</li>
+                      {% endfor %}
+                  </ul>
+              {% else %}
+                  <p>No achievements yet.</p>
+              {% endif %}
+                </p>
+        </div>
         </ul>
         </p>
-
-
 
         </ul>
       </div>
@@ -53,51 +65,51 @@
 
 
       <!-- tasks section -->
-  <p>
+  
           <h2>Tasks:</h2>
-      
-      <div class="accordion" id="accordionOfTasks">
-        
-        <form method="get" action="{% url 'dashboard' %}">
-          <div class="row">
-            <div class="col">
-              <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="sort_order_team_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  Sort by Team
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="sort_order_team_dropdown">
-                  {% for task in user_tasks %}
-                    <li><a class="dropdown-item" href="#" data-value="{{ task.team }}">{{ task.team }}</a></li>
-                  {% endfor %}
-                </ul>
+      <p>
+        <div class="accordion" id="accordionOfTasks">
+          
+          <form method="get" action="{% url 'dashboard' %}">
+            <div class="row">
+              <div class="col">
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="sort_order_team_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sort by Team
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="sort_order_team_dropdown">
+                    {% for task in user_tasks %}
+                      <li><a class="dropdown-item" href="#" data-value="{{ task.team }}">{{ task.team }}</a></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+              <div class="col">
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="sort_order_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sort by
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="sort_order_dropdown">
+                    <li><a class="dropdown-item" href="#" data-value="ascending">Ascending</a></li>
+                    <li><a class="dropdown-item" href="#" data-value="descending">Descending</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col">
+                <button type="submit" class="btn btn-primary">Sort</button>
               </div>
             </div>
-            <div class="col">
-              <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="sort_order_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  Sort by
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="sort_order_dropdown">
-                  <li><a class="dropdown-item" href="#" data-value="ascending">Ascending</a></li>
-                  <li><a class="dropdown-item" href="#" data-value="descending">Descending</a></li>
-                </ul>
-              </div>
-            </div>
-            <div class="col">
-              <button type="submit" class="btn btn-primary">Sort</button>
-            </div>
-          </div>
-        </form>
-
+          </form>
+      </p>
         <div class="row mt-4">
-        {% if tasks %}
-          <ul>
-            {% for task in tasks %}
-              <li>
+        {% if user_tasks %}
+          <ul id ="task-ul">
+            {% for task in user_tasks %}
+              <li id ="task-li">
                 <strong>Title:</strong> {{ task.title }}<br>
                 <strong>Description:</strong> {{ task.description }}<br>
-                <strong>Due Date:</strong> {{ task.dueDate }}<br>
-                <strong>Team:</strong> {{ task.team }}<br>
+                <strong>Due Date:</strong> {{ task.due_date }}<br>
+                <strong>Team:</strong> {{ task.team.name }}<br>
               </li>
             {% endfor %}
           </ul>
@@ -105,32 +117,6 @@
           <p>No tasks assigned.</p>
         {% endif %}
         </div>
-    
-    <!--commented out until the above code functions-->
-    {% comment %} {% if tasks %}
-    <div class="accordion" id="taskAccordion">
-      {% for task in tasks %}
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="heading{{ task.id }}">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ task.id }}" aria-expanded="true" aria-controls="collapse{{ task.id }}">
-            {{ task.title }}
-          </button>
-        </h2>
-        <div id="collapse{{ task.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ task.id }}" data-bs-parent="#taskAccordion">
-          <div class="accordion-body">
-            <strong>Title:</strong> {{ task.title }}<br>
-            <strong>Description:</strong> {{ task.description }}<br>
-            <strong>Due Date:</strong> {{ task.dueDate }}<br>
-            <strong>Team:</strong> {{ task.team }}<br>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-    {% else %}
-    <p>No tasks assigned.</p>
-    {% endif %} {% endcomment %}
-
     <!-- end tasks section -->
     
   </div>
