@@ -69,6 +69,8 @@ class User(AbstractUser):
         'Invite', related_name='sent_invites', blank=True)
     received_invites = models.ManyToManyField(
         'Invite', related_name='received_invites', blank=True)
+    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
 
     class Meta:
         """Model options."""
