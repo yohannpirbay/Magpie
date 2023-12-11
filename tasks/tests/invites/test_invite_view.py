@@ -61,3 +61,9 @@ class InviteViewTests(TestCase):
         # Check if an invitation is created
         invite = Invite.objects.filter(sender=self.user, recipient=self.recipient_user).first()
         self.assertIsNotNone(invite)
+
+    def test_invites_view(self):
+        self.client.login(username='testuser', password='testpassword')
+        invite = Invite.objects.create(sender=self.user, recipient=self.recipient_user, status='pending', team_id=self.team.id)
+        response = self.client.get(reverse('invites'))
+        self.assertEqual(response.status_code, 200)

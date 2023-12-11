@@ -6,7 +6,6 @@ from tasks.models import User, Team
 
 class CreateTeamViewTestCase(TestCase):
     """Tests of the create team view"""
-    """not finished yet"""
 
     fixtures = ['tasks/tests/fixtures/default_teams.json', 'tasks/tests/fixtures/default_user.json']
 
@@ -40,7 +39,6 @@ class CreateTeamViewTestCase(TestCase):
         self.client.force_login(self.user)
         data = {'name': 'Team Name', 'description': 'Team Description', 'members': self.user.id}
         response = self.client.post(self.url, data)
-        print(response.content)
         self.assertRedirects(response, reverse('dashboard'))
         self.assertEqual(Team.objects.filter(name='Team Name').count(), 1)
 

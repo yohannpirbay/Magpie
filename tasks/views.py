@@ -65,8 +65,7 @@ def dashboard(request):
 
     # Retrieve tasks assigned to the current user
     user_tasks = Task.objects.filter(assigned_user=current_user)
-    print("USER TASKS: ! ")
-    print(user_tasks)
+
 
     # Retrieve the user's achievements
     user_achievements = current_user.achievements.all()
@@ -465,31 +464,22 @@ from django.http import Http404
 def create_task(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
-        print('Form data before validation:', form.data)
         if form.is_valid():
             try:
-                print('here')
                 assigned_user = form.cleaned_data['assigned_user']
 
-                print("here2")
 
                 with transaction.atomic():
-                    print("here3")
                     task = form.save(commit=False)
-                    print("here4")
                     task.assigned_user = assigned_user
-                    print("here5")
                     task.save()
-                    print("here6")
 
                     messages.success(request, 'Task created successfully!')
                     return redirect('dashboard')
             except (User.DoesNotExist, ValueError, Exception) as e:
                 messages.error(request, f"An error occurred: {e}")
-                print('Error during task creation:', e)
-                print('Form errors:', form.errors)
+
         else:
-            print('Form errors:', form.errors)
             messages.error(request, 'There was an error creating the task.')
     else:
         form = TaskForm()
