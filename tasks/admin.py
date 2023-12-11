@@ -53,9 +53,11 @@ class InviteAdmin(admin.ModelAdmin):
 class AchievementAdmin(admin.ModelAdmin):
     list_display = ['name', 'description']
 
-#@admin.register(Task)
-#class TaskAdmin(admin.ModelAdmin):
-    #list_display = ['title', 'description','assigned_user', 'due_date', 'team', 'id', 'is_finished', 'finished_on']
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ['title', 'description','assigned_users', 'due_date', 'team', 'id', 'is_finished', 'finished_on']
+    def assigned_users(self, obj):
+        return ", ".join([user.username for user in obj.assigned_users.all()])
 
 
 
