@@ -457,10 +457,10 @@ def create_task(request):
                 with transaction.atomic():
                     # Create a task object without saving it to the database
                     task = form.save(commit=False)
+                    task.save()
                     # Set the assigned_user field
                     task.assigned_users.set(form.cleaned_data['assigned_users'])
-                    # Save the task to the database
-                    task.save()
+                    
 
                     # Display success message and redirect to the dashboard
                     messages.success(request, 'Task created successfully!')

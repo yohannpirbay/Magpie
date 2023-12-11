@@ -9,8 +9,8 @@
                 {{form.as_p}}
 
 
-                <!-- Add a hidden input field to store the selected team -->
-                <input type="hidden" id="id_team" name="team" value="{% if form.instance.team %}{{ form.instance.team.id }}{% endif %}">
+                <!-- Add a hidden input field to store the selected team 
+                <input type="hidden" id="id_team" name="team" value="{% if form.instance.team %}{{ form.instance.team.id }}{% endif %}">-->
 
 
             <input type="submit" value="Create Task" class="btn btn-primary" style="margin-bottom: 20px;">
@@ -27,6 +27,9 @@
 
     function updateUsers() {
         const selectedTeam = document.getElementById('id_team').value;
+        document.getElementById('id_team').value = selectedTeam;
+        console.log("Selected Team:", document.getElementById('id_team').value);
+
 
         fetch(`/get_users_for_team/${selectedTeam}/`)
             .then(response => response.json())
