@@ -463,7 +463,7 @@ def create_task(request):
                     # Set the assigned_user field
                     task.assigned_users.set(form.cleaned_data['assigned_users'])
                     
-
+                    
                     # Display success message and redirect to the dashboard
                     messages.success(request, 'Task created successfully!')
                     return redirect('dashboard')
@@ -475,13 +475,14 @@ def create_task(request):
             messages.error(request, 'There was an error creating the task.')
     else:
         # If the request method is not POST, create an empty TaskForm
-        form = TaskForm()
+        form = TaskForm(user=request.user)
 
         # Set the initial value for the team field based on the form's instance
         if form.instance and hasattr(form.instance, 'team') and form.instance.team:
             form.fields['team'].initial = str(form.instance.team.id)
         else:
             form.fields['team'].initial = ''
+        
 
     # Render the create_task.html template with the form
     return render(request, 'create_task.html', {'form': form})

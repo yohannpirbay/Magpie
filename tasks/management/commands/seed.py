@@ -141,7 +141,7 @@ class Command(BaseCommand):
         for team in Team.objects.all():
             for user in team.members.all():
                 #number of tasks for each member of a team
-                for _ in range(randint(0,5)):
+                for _ in range(randint(0,3)):
                     self.generate_task(user, team)
                 
         print("Task seeding complete.      ")
@@ -150,7 +150,7 @@ class Command(BaseCommand):
         title = self.faker.sentence()
         description = self.faker.paragraph()
         due_date = self.faker.future_datetime(end_date='+30d', tzinfo=None)
-        self.try_create_task({'title': title, 'description': description, 'assigned_user': user, 'team': team, 'due_date': due_date})
+        self.try_create_task({'title': title, 'description': description, 'assigned_users': [user], 'team': team, 'due_date': due_date})
 
     def try_create_task(self, data):
         try:
@@ -159,15 +159,15 @@ class Command(BaseCommand):
             pass
 
     def create_task(self, data):
-        assigned_user = data['assigned_user']
+        assigned_users = data['assigned_users']
         team = data['team']
-        Task.objects.create(
+        task = Task.objects.create(
             title=data['title'],
             description=data['description'],
-            assigned_user=assigned_user,
             team=team,
             due_date=data['due_date']
         )
+        task.assigned_users.set(assigned_users)
 
 
     def create_invites(self):

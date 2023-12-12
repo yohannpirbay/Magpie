@@ -207,5 +207,11 @@ class TaskForm(forms.ModelForm):
             raise forms.ValidationError('Due date must be in the future.')
         return due_date
     
+    def __init__(self, *args, user=None, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        
+        if user:
+            self.fields['team'].queryset = user.teams.all()
+    
     
 

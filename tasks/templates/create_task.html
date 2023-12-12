@@ -7,8 +7,7 @@
             <form action="{% url 'create_task' %}" method="post">
                 {% csrf_token %}
                 {{form.as_p}}
-
-
+                
                 <!-- Add a hidden input field to store the selected team 
                 <input type="hidden" id="id_team" name="team" value="{% if form.instance.team %}{{ form.instance.team.id }}{% endif %}">-->
 
