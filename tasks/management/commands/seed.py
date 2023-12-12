@@ -21,9 +21,9 @@ class Command(BaseCommand):
     """Build automation command to seed the database."""
 
     #number of random teams in addition to the base 1 team for every 6 users
-    RANDOM_TEAM_COUNT = 30
+    RANDOM_TEAM_COUNT = 50
     #number of users to be seeded
-    USER_COUNT = 50
+    USER_COUNT = 100
     DEFAULT_PASSWORD = 'Password123'
     TEAM_ASSIGNMENT = None
     help = 'Seeds the database with sample data'
@@ -141,7 +141,7 @@ class Command(BaseCommand):
         for team in Team.objects.all():
             for user in team.members.all():
                 #number of tasks for each member of a team
-                for _ in range(randint(0,3)):
+                for _ in range(randint(0,5)):
                     self.generate_task(user, team)
                 
         print("Task seeding complete.      ")

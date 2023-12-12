@@ -55,9 +55,13 @@ class AchievementAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['title', 'description','assigned_users', 'due_date', 'team', 'id', 'is_finished', 'finished_on']
-    def assigned_users(self, obj):
+    list_display = ['title', 'description', 'due_date', 'team', 'id','assigned_users_list', 'is_finished', 'finished_on']
+
+    def assigned_users_list(self, obj):
         return ", ".join([user.username for user in obj.assigned_users.all()])
+
+    assigned_users_list.short_description = 'Assigned Users'
+
 
 
 
