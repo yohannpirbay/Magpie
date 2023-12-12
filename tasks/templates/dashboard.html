@@ -26,6 +26,7 @@
           <a href='{% url 'My_team' %}' class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             My Teams
           </a>
+          <p>
           <div id="achievements">
             <h3>Achievements</h3>
             {% if achievements %}
@@ -37,10 +38,8 @@
             {% else %}
                 <p>No achievements yet.</p>
             {% endif %}
-        </div>
-        </ul>
+          </div>
         </p>
-
         </ul>
       </div>
       <!-- end smaller container -->
