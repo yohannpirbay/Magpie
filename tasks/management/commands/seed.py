@@ -38,7 +38,6 @@ class Command(BaseCommand):
         self.create_random_teams()
         self.create_tasks()
         self.create_invites()
-        #self.append_achievements()
     
     def create_users(self):
         self.generate_user_fixtures()
@@ -190,19 +189,6 @@ class Command(BaseCommand):
             team = team,
             status = 'pending'
         )
-
-    #def append_achievements(self):
-    #    for team in Team.objects.all():
-    #        count = 0
-    #        for user in team.members.all():
-    #            count += 1
-    #            if (user.sent_invites.count() > 0):
-    #                achievement = Achievement.objects.get(name='First Invitation')
-    #                user.achievements.add(achievement)
-    #            if (count == (team.members.all().count()) and not(user.achievements.filter(name='First Team Created').exists())):
-    #                achievement = Achievement.objects.get(name='First Team Created')
-    #                user.achievements.add(achievement)
-    #    print("Achievements seeding complete.      ")
 
 
 def create_username(first_name, last_name):
