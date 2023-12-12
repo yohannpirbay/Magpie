@@ -28,13 +28,11 @@
     function updateUsers() {
         const selectedTeam = document.getElementById('id_team').value;
         document.getElementById('id_team').value = selectedTeam;
-        console.log("Selected Team:", document.getElementById('id_team').value);
 
 
         fetch(`/get_users_for_team/${selectedTeam}/`)
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 const assignedUsersContainer = document.getElementById('id_assigned_users');
                 assignedUsersContainer.innerHTML = '';
 

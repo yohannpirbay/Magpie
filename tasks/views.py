@@ -437,7 +437,6 @@ def get_users_for_team(request, team_id):
 
         # Create a JSON response with user data
         user_data = [{'id': user.id, 'username': user.username} for user in users]
-        print(team_id)
         
 
         return JsonResponse(user_data, safe=False)
@@ -450,13 +449,11 @@ def get_users_for_team(request, team_id):
 def create_task(request):
     # Check if the request method is POST
     if request.method == 'POST':
-        print("Received form data:", request.POST)
         # Create a TaskForm instance with the POST data
         form = TaskForm(request.POST)
         
         # Check if the form is valid
         if form.is_valid():
-            print("Form is valid. Saving task...")
             try:
                 # Use a transaction to ensure atomicity
                 with transaction.atomic():
@@ -476,7 +473,6 @@ def create_task(request):
         else:
             # Display an error message if the form is not valid
             messages.error(request, 'There was an error creating the task.')
-            print("Form is not valid. Form errors:", form.errors)
     else:
         # If the request method is not POST, create an empty TaskForm
         form = TaskForm()

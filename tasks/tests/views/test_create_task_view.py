@@ -58,6 +58,5 @@ class CreateTasksTestCase(TestCase):
         self.client.force_login(self.user)
         data = {'title': 'New Task', 'description': 'New Description', 'assigned_users': self.user.id, 'due_date': '2024-02-29', 'team': self.team.id}
         response = self.client.post(self.url, data)
-        print(response.content)
         self.assertRedirects(response, reverse('dashboard'))
         self.assertEqual(Task.objects.filter(title='New Task').count(), 1)

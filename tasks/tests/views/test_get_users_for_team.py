@@ -16,7 +16,6 @@ class GetUsersForTeamViewTest(TestCase):
     def test_get_users_for_existing_team(self):
         url = reverse('get_users_for_team', args=[self.team.id])
         response = self.client.get(url)
-        print(response)
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.user.username.encode(), response.content)
 
