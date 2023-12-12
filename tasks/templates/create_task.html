@@ -38,17 +38,19 @@
 
                 data.forEach(user => {
                     const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = 'assigned_users';  // Adjust as needed
-                checkbox.value = user.id;
-                checkbox.id = `user_${user.id}`;
+                    const userDiv = document.createElement('div');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'assigned_users';  // Adjust as needed
+                    checkbox.value = user.id;
+                    checkbox.id = `user_${user.id}`;
 
-                const label = document.createElement('label');
-                label.htmlFor = `user_${user.id}`;
-                label.appendChild(document.createTextNode(user.username));
+                    const label = document.createElement('label');
+                    label.htmlFor = `user_${user.id}`;
+                    label.appendChild(document.createTextNode(user.username));
 
-                assignedUsersContainer.appendChild(checkbox);
-                assignedUsersContainer.appendChild(label);
+                    assignedUsersContainer.appendChild(checkbox);
+                    assignedUsersContainer.appendChild(label);
+                    assignedUsersContainer.appendChild(userDiv);
                 });
             })
             .catch(error => {
