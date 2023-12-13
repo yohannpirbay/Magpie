@@ -69,3 +69,6 @@ Yohann:
 
 - Magpie/tasks/forms.py Used chatGPT to find how to correctly have a multiple checkbox for Team form (less than 10% of the unit).
 
+Hilal :
+
+- Magpie/tasks/signals.py Asked GPT to how to use signals (about %80 GPT written).
