@@ -167,7 +167,7 @@ class TeamForm(forms.ModelForm):
 
     members = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(),
-        widget=forms.CheckboxSelectMultiple(),  # Use CheckboxSelectMultiple for multiple selections
+        widget=forms.CheckboxSelectMultiple(),  
     )
 
     class Meta:
@@ -190,7 +190,7 @@ class TaskForm(forms.ModelForm):
 
     assigned_users = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(),
-        widget=forms.CheckboxSelectMultiple(),  # Use CheckboxSelectMultiple for multiple selections
+        widget=forms.CheckboxSelectMultiple(),  
     )
 
     class Meta:
