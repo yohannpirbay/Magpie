@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from tasks.models import Task,User,Team
-from datetime import datetime, timedelta
+from tasks.models import Task, User, Team
+from datetime import timedelta
 
 class UpdateTaskStatusTestCase(TestCase):
     def setUp(self):
@@ -31,8 +31,8 @@ class UpdateTaskStatusTestCase(TestCase):
         initial_is_finished = self.task.is_finished
         initial_finished_on = self.task.finished_on
 
-        # Simulate a request to update the task status
-        response = self.client.post(reverse('update_task_status', args=[self.task.id]))
+        # Simulate an AJAX request to update the task status
+        response = self.client.post(reverse('update_task_status', args=[self.task.id]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
         # Reload the task from the database to get the updated values
         updated_task = Task.objects.get(id=self.task.id)
