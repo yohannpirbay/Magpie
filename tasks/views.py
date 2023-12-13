@@ -22,6 +22,7 @@ from .signals import team_created_achievement  # Import your signal
 from .models import Task
 from django.http import Http404
 from django.utils import timezone
+from django.http import JsonResponse, HttpResponseBadRequest
 
 
 @login_required
@@ -488,7 +489,11 @@ def create_task(request):
     return render(request, 'create_task.html', {'form': form})
 
 
+
 def update_task_status(request, task_id):
+    if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        return JsonResponse({'error': 'This endpoint only accepts AJAX requests.'}, status=400)
+
     task = get_object_or_404(Task, id=task_id)
 
     # Your logic to update the task status
@@ -497,4 +502,3 @@ def update_task_status(request, task_id):
     task.save()
 
     return JsonResponse({'success': True})
-
