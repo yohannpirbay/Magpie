@@ -50,4 +50,8 @@ $ python3 manage.py test
 ## Sources
 The packages used by this application are specified in `requirements.txt`
 
-*Declare are other sources here, and remove this line*
+Uses of chatGPT:
+Deividas:
+Magpie/tasks/models.py Task class: When I originally coded the task class I didn't know models.DateField existed when attempting to implement a due date (less than 25% of the unit). User class: I didn't know how to seed a superuser so chatGPT explained it could be done by adding is_superuser and is_staff fields to the user model (less than 25% of the unit).
+Magpie/tasks/management/commands/seed.py: generate_task function: I didn't know how to get Faker to seed future dates so I had chatGPT show me how to (less than 25% of the unit).
+
