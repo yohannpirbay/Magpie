@@ -75,4 +75,5 @@ Hilal :
 
 Heng:
 - Magpie/tasks/templates/create_team.html line 10, the checkbox firstly does not work while using bootstrap_form.html, so I asked AI and it it me use  form.as_p(less than 10% of the unit)
+
 - Magpie/tasks/templates/team_members.html line 13, I do not know how to add the gravatar, so I use chatGPT to show me how to do it(less than 10% of the unit)
