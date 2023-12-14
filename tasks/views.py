@@ -491,9 +491,6 @@ def create_task(request):
 
 
 def update_task_status(request, task_id):
-    if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        return JsonResponse({'error': 'This endpoint only accepts AJAX requests.'}, status=400)
-
     task = get_object_or_404(Task, id=task_id)
 
     # Your logic to update the task status
